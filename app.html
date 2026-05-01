@@ -823,12 +823,16 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   <div id="userZone"></div>
 </div>
 <div id="pmenu">
-  <div class="pm-hdr"><div class="pm-name" id="pmName">–</div><div class="pm-email" id="pmEmail">–</div></div>
+  <div class="pm-hdr">
+    <div class="pm-name" id="pmName">–</div>
+    <div class="pm-email" id="pmEmail">–</div>
+    <div id="pmAdminBadge" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:2px;background:rgba(255,215,0,.15);color:#FFD700;border:1px solid rgba(255,215,0,.3);padding:2px 8px;border-radius:8px;margin-top:4px">⚙ ADMINISTRATEUR</div>
+  </div>
   <div class="pm-row" onclick="openM('upgradeModal')">⭐ Passer Premium</div>
   <div class="pm-row" onclick="openM('affModal')">🎰 Casinos partenaires</div>
   <div class="pm-row" id="pmClubRow" style="display:none" onclick="openClub()">👑 WheelCaller Club</div>
   <div class="pm-row" onclick="window.open('guide.html','_blank')">📖 Guide d'utilisation</div>
-  <div class="pm-row" onclick="openAdminPanel()">⚙ Admin Panel</div>
+  <div class="pm-row" id="pmAdminRow" style="display:none" onclick="openAdminPanel()">⚙ Admin Panel</div>
   <div class="pm-row red" onclick="doLogout()">↩ Déconnexion</div>
 </div>
 
@@ -1730,22 +1734,20 @@ function swM(a,b){closeM(a);openM(b)}
     if(stored){
       const u = JSON.parse(stored);
       if(u && u.email){
-        // Build user object from landing registration
         user = {
-          name: u.prenom ? u.prenom + ' ' + u.nom : u.email.split('@')[0],
-          email: u.email,
-          prenom: u.prenom||'',
-          nom: u.nom||''
+          name: u.prenom ? u.prenom+' '+u.nom : u.email.split('@')[0],
+          email: u.email, prenom: u.prenom||'', nom: u.nom||''
         };
         loggedIn = true;
-        const pack = u.pack || 'free';
-        currentPlan = pack;
-        isPrem = (pack !== 'free');
-        // Apply plan access after DOM is ready
         document.addEventListener('DOMContentLoaded', ()=>{
-          renderUser();
-          applyPlanAccess(pack);
-          startNewSession();
+          if(ADMIN_EMAILS.includes(u.email)){
+            applyAdminAccess(); renderUser(); startNewSession();
+            showToast('⚜ Accès Administrateur activé');
+          } else {
+            const pack = u.pack||'free';
+            currentPlan=pack; isPrem=(pack!=='free');
+            renderUser(); applyPlanAccess(pack); startNewSession();
+          }
         });
       }
     }
@@ -1753,23 +1755,36 @@ function swM(a,b){closeM(a);openM(b)}
 })();
 
 function doLogin(){
-  const e=document.getElementById('li-email').value;
-  const p=document.getElementById('li-pwd')?document.getElementById('li-pwd').value:'';
-  if(!e){showToast('Email requis'); return;}
-  // Check stored user
+  const e = document.getElementById('li-email').value.trim();
+  if(!e){ showToast('Email requis'); return; }
+
+  // ── ADMIN LOGIN ──
+  if(ADMIN_EMAILS.includes(e)){
+    user = { name:'Simon Dubreil', email:ADMIN_EMAIL, prenom:'Simon', nom:'Dubreil' };
+    localStorage.setItem('wc_user', JSON.stringify({
+      prenom:'Simon', nom:'Dubreil', email:ADMIN_EMAIL, pack:'vip', isAdmin:true, createdAt:new Date().toISOString()
+    }));
+    closeM('loginModal');
+    applyAdminAccess();
+    renderUser();
+    startNewSession();
+    showToast('⚜ Bienvenue Simon · Accès Administrateur activé');
+    setTimeout(()=>{ window.open('admin.html','_blank'); }, 1200);
+    return;
+  }
+
+  // ── USER LOGIN ──
   const stored = JSON.parse(localStorage.getItem('wc_user')||'null');
   if(stored && stored.email === e){
-    user={name:(stored.prenom||'')+(stored.nom?' '+stored.nom:'') || e.split('@')[0], email:e, prenom:stored.prenom||'', nom:stored.nom||''};
+    user = { name:(stored.prenom||'')+(stored.nom?' '+stored.nom:'') || e.split('@')[0], email:e, prenom:stored.prenom||'', nom:stored.nom||'' };
     const pack = stored.pack||'free';
-    currentPlan = pack; isPrem = (pack!=='free');
-    loggedIn=true;
+    currentPlan=pack; isPrem=(pack!=='free'); loggedIn=true;
     closeM('loginModal');
     renderUser(); applyPlanAccess(pack); startNewSession();
   } else {
-    // New login: create session
-    user={name:e.split('@')[0],email:e};
+    user = { name:e.split('@')[0], email:e };
     loggedIn=true; isPrem=false; currentPlan='free';
-    localStorage.setItem('wc_user', JSON.stringify({email:e, prenom:e.split('@')[0], nom:'', pack:'free', createdAt:new Date().toISOString()}));
+    localStorage.setItem('wc_user', JSON.stringify({ email:e, prenom:e.split('@')[0], nom:'', pack:'free', createdAt:new Date().toISOString() }));
     closeM('loginModal');
     renderUser(); startNewSession();
   }
@@ -1869,11 +1884,31 @@ function renderUser(){
   document.getElementById('pmEmail').textContent=user.email;
 }
 
+// ══ ADMIN CONFIG ══
+const ADMIN_EMAIL = 'sdb.consulting.pro@gmail.com';
+const ADMIN_EMAILS = [ADMIN_EMAIL];
+
+function isAdmin(){ return user && ADMIN_EMAILS.includes(user.email); }
+
+function applyAdminAccess(){
+  currentPlan='vip'; isPrem=true; loggedIn=true;
+  try{applyPlanAccess('vip');}catch(e){}
+  const adminRow=document.getElementById('pmAdminRow');
+  if(adminRow) adminRow.style.display='block';
+  const clubRow=document.getElementById('pmClubRow');
+  if(clubRow) clubRow.style.display='block';
+  const badge=document.getElementById('pmAdminBadge');
+  if(badge) badge.style.display='block';
+}
+
 function togglePmenu(){
   document.getElementById('pmenu').classList.toggle('show');
   // Show Club row only for VIP members
   const clubRow = document.getElementById('pmClubRow');
   if(clubRow) clubRow.style.display = currentPlan==='vip' ? 'block' : 'none';
+  // Show Admin Panel only for admin email
+  const adminRow = document.getElementById('pmAdminRow');
+  if(adminRow) adminRow.style.display = isAdmin() ? 'block' : 'none';
 }
 
 function openClub(){
