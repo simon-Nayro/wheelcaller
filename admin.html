@@ -2,257 +2,256 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>WheelCaller · Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --gold:#d4a843;--gold2:#FFD700;--gold3:#8a6418;
-  --felt:#0b1a11;--felt2:#0f1e14;--felt3:#162a1c;
-  --green:#1a9944;--green2:#50ff90;
-  --red:#c42020;--red2:#ff6060;
-  --blue:#2060c0;--blue2:#60aaff;
-  --prem:#8040c0;--prem2:#c090ff;
-  --ivory:#f0e0c0;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{background:var(--felt);color:var(--ivory);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
+:root{--gold:#d4a843;--gold2:#FFD700;--gold3:#8a6418;--felt:#0b1a11;--felt2:#0f1e14;--green:#1a9944;--green2:#50ff90;--red:#c42020;--red2:#ff6060;--blue:#2060c0;--blue2:#60aaff;--prem:#8040c0;--prem2:#c090ff;--orange2:#ffaa40;--ivory:#f0e0c0}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--felt);color:var(--ivory);font-family:'Barlow Condensed',sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* ══ LOGIN SCREEN ══ */
-#loginScreen{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(212,168,67,.08),transparent);
-}
-.login-box{
-  background:rgba(0,0,0,.4);border:1px solid rgba(212,168,67,.2);border-radius:6px;
-  padding:32px 24px;width:100%;max-width:360px;text-align:center;
-}
-.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold2);margin-bottom:4px}
-.login-sub{font-size:10px;letter-spacing:3px;color:rgba(212,168,67,.3);margin-bottom:28px;text-transform:uppercase}
-.login-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold2);margin-bottom:20px}
-.fi{width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(212,168,67,.2);color:var(--ivory);
-    padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;border-radius:2px;
-    outline:none;margin-bottom:12px}
+/* LOGIN */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(212,168,67,.1),transparent)}
+.lbox{background:rgba(0,0,0,.5);border:1px solid rgba(212,168,67,.25);border-radius:8px;padding:36px 24px;width:100%;max-width:360px;text-align:center}
+.llogo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:5px;color:var(--gold2);margin-bottom:4px}
+.lsub{font-size:9px;letter-spacing:4px;color:rgba(212,168,67,.3);margin-bottom:6px;text-transform:uppercase}
+.ladmin{display:inline-block;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:2px;background:rgba(255,215,0,.1);color:var(--gold2);border:1px solid rgba(255,215,0,.25);padding:3px 12px;border-radius:8px;margin-bottom:24px}
+.fi{width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(212,168,67,.2);color:var(--ivory);padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;border-radius:3px;outline:none;margin-bottom:10px}
 .fi:focus{border-color:var(--gold2)}
 .fi::placeholder{color:rgba(240,224,192,.2)}
-.btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));
-           color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;
-           border:none;border-radius:2px;cursor:pointer;margin-top:4px}
-.btn-login:hover{filter:brightness(1.1)}
-.login-err{font-size:12px;color:var(--red2);margin-top:10px;display:none;
-           padding:8px;background:rgba(196,32,32,.1);border:1px solid rgba(196,32,32,.2);border-radius:2px}
-.login-err.show{display:block}
+.lbtn{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;border:none;border-radius:3px;cursor:pointer;margin-top:4px}
+.lbtn:hover{filter:brightness(1.1)}
+.lerr{font-size:12px;color:var(--red2);margin-top:10px;display:none;padding:8px;background:rgba(196,32,32,.1);border:1px solid rgba(196,32,32,.2);border-radius:2px}
+.lerr.show{display:block}
 
-/* ══ ADMIN APP ══ */
+/* APP */
 #adminApp{display:none}
-
-/* NAV */
-nav{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.15);
-    background:rgba(0,0,0,.5);position:sticky;top:0;z-index:50;gap:10px;backdrop-filter:blur(8px)}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--gold2);flex:1}
-.nav-logo small{font-size:9px;letter-spacing:2px;color:rgba(212,168,67,.3);display:block;font-family:'Barlow Condensed',sans-serif}
-.nav-btn{padding:5px 12px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
-         border:1px solid rgba(212,168,67,.2);background:transparent;color:var(--gold);cursor:pointer;border-radius:2px}
+nav{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.15);background:rgba(0,0,0,.6);position:sticky;top:0;z-index:50;gap:8px;backdrop-filter:blur(10px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--gold2);flex:1;line-height:1}
+.nav-logo small{font-size:8px;letter-spacing:2px;color:rgba(212,168,67,.3);display:block;font-family:'Barlow Condensed',sans-serif}
+.nav-badge{font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:2px;background:rgba(255,215,0,.12);color:var(--gold2);border:1px solid rgba(255,215,0,.25);padding:2px 8px;border-radius:8px}
+.nav-btn{padding:5px 10px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border:1px solid rgba(212,168,67,.2);background:transparent;color:var(--gold);cursor:pointer;border-radius:2px;white-space:nowrap}
 .nav-btn:hover{background:rgba(212,168,67,.08)}
-
-/* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:16px}
-.kpi{padding:14px;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.1);border-radius:4px;text-align:center}
-.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;margin-bottom:4px}
-.kpi-val.gold{color:var(--gold2)}
-.kpi-val.green{color:var(--green2)}
-.kpi-val.blue{color:var(--blue2)}
-.kpi-val.prem{color:var(--prem2)}
-.kpi-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,224,192,.35)}
-
-/* SECTION HEADER */
-.sh{display:flex;align-items:center;gap:8px;padding:12px 16px 8px;
-    font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold2);
-    border-bottom:1px solid rgba(212,168,67,.1)}
-.sh-count{font-size:11px;color:rgba(212,168,67,.35);margin-left:auto;letter-spacing:1px}
-
-/* PACK FILTER */
-.pack-filter{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(212,168,67,.06)}
-.pack-filter::-webkit-scrollbar{display:none}
-.pf-btn{flex-shrink:0;padding:4px 12px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;
-        border:1px solid rgba(212,168,67,.15);background:transparent;color:rgba(212,168,67,.5);
-        border-radius:10px;cursor:pointer}
-.pf-btn.active{background:rgba(212,168,67,.1);color:var(--gold2);border-color:rgba(212,168,67,.3)}
-.pf-btn.free.active{color:var(--gold2);border-color:rgba(212,168,67,.4)}
-.pf-btn.starter.active{color:var(--blue2);border-color:rgba(32,96,192,.4);background:rgba(32,96,192,.1)}
-.pf-btn.pro.active{color:var(--green2);border-color:rgba(80,255,144,.4);background:rgba(80,255,144,.07)}
-.pf-btn.elite.active{color:var(--prem2);border-color:rgba(128,64,192,.4);background:rgba(128,64,192,.07)}
-.pf-btn.vip.active{color:#ff8060;border-color:rgba(192,64,32,.4);background:rgba(192,64,32,.07)}
-
-/* SEARCH */
-.search-wrap{padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.06)}
-.search-inp{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.15);color:var(--ivory);
-            padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:2px;outline:none}
-.search-inp::placeholder{color:rgba(240,224,192,.2)}
-.search-inp:focus{border-color:rgba(212,168,67,.4)}
-
-/* USER TABLE */
-.user-list{padding:8px 16px 80px;display:flex;flex-direction:column;gap:6px}
-.user-card{padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px;cursor:pointer;transition:border-color .15s}
-.user-card:hover{border-color:rgba(212,168,67,.25)}
-.uc-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.uc-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-           font-family:'Bebas Neue',sans-serif;font-size:14px;flex-shrink:0}
-.uc-avatar.free{background:rgba(212,168,67,.15);color:var(--gold2)}
-.uc-avatar.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
-.uc-avatar.pro{background:rgba(80,255,144,.12);color:var(--green2)}
-.uc-avatar.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
-.uc-avatar.vip{background:rgba(192,64,32,.15);color:#ff8060}
-.uc-name{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--gold2);flex:1}
-.uc-pack{font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:8px;font-family:'Bebas Neue',sans-serif;white-space:nowrap}
-.uc-pack.free{background:rgba(212,168,67,.1);color:var(--gold2);border:1px solid rgba(212,168,67,.2)}
-.uc-pack.starter{background:rgba(32,96,192,.1);color:var(--blue2);border:1px solid rgba(32,96,192,.2)}
-.uc-pack.pro{background:rgba(80,255,144,.08);color:var(--green2);border:1px solid rgba(80,255,144,.2)}
-.uc-pack.elite{background:rgba(128,64,192,.1);color:var(--prem2);border:1px solid rgba(128,64,192,.2)}
-.uc-pack.vip{background:rgba(192,64,32,.1);color:#ff8060;border:1px solid rgba(192,64,32,.2)}
-.uc-email{font-size:12px;color:rgba(240,224,192,.4);margin-bottom:4px}
-.uc-meta{display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);letter-spacing:.5px}
-.uc-meta span{display:flex;align-items:center;gap:4px}
-
-/* EMPTY STATE */
-.empty{text-align:center;padding:40px 20px;color:rgba(240,224,192,.25)}
-.empty-ico{font-size:36px;margin-bottom:10px}
-.empty-txt{font-size:13px;letter-spacing:1px}
-
-/* DETAIL MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;
-         align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(4px)}
-.overlay.show{display:flex}
-.detail-modal{background:var(--felt2);border:1px solid rgba(212,168,67,.2);border-radius:6px 6px 0 0;
-              width:100%;max-width:500px;padding:20px;max-height:80vh;overflow-y:auto}
-.dm-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(212,168,67,.1)}
-.dm-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px}
-.dm-avatar.free{background:rgba(212,168,67,.15);color:var(--gold2)}
-.dm-avatar.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
-.dm-avatar.pro{background:rgba(80,255,144,.12);color:var(--green2)}
-.dm-avatar.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
-.dm-avatar.vip{background:rgba(192,64,32,.15);color:#ff8060}
-.dm-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--gold2);flex:1}
-.dm-x{background:none;border:none;color:rgba(212,168,67,.4);font-size:18px;cursor:pointer}
-.dm-x:hover{color:var(--gold2)}
-.dm-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(212,168,67,.06);font-size:13px}
-.dm-row:last-child{border:none}
-.dm-key{color:rgba(240,224,192,.35);letter-spacing:1px;width:90px;flex-shrink:0;font-size:11px;text-transform:uppercase}
-.dm-val{color:var(--ivory);flex:1}
-.dm-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(212,168,67,.08)}
-.dm-btn{width:100%;padding:9px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
-        border-radius:2px;cursor:pointer;text-align:center}
-.dm-btn.upgrade{background:rgba(80,255,144,.08);color:var(--green2);border:1px solid rgba(80,255,144,.2)}
-.dm-btn.delete{background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2)}
+.nav-btn.red{border-color:rgba(255,96,96,.2);color:var(--red2)}
 
 /* BOTTOM TAB */
-.bottom-tab{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(8,20,10,.96);
-            border-top:1px solid rgba(212,168,67,.12);backdrop-filter:blur(10px);z-index:40}
-.bt-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;cursor:pointer;gap:3px}
-.bt-ico{font-size:18px}
-.bt-lbl{font-size:9px;letter-spacing:1px;color:rgba(212,168,67,.4);text-transform:uppercase}
-.bt-item.active .bt-lbl{color:var(--gold2)}
+.btab{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(6,16,8,.97);border-top:1px solid rgba(212,168,67,.12);backdrop-filter:blur(10px);z-index:40}
+.bt{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 2px 10px;cursor:pointer;gap:2px;transition:background .15s}
+.bt:hover{background:rgba(212,168,67,.04)}
+.bt-ico{font-size:17px}
+.bt-lbl{font-size:8px;letter-spacing:1px;color:rgba(212,168,67,.35);text-transform:uppercase}
+.bt.active .bt-lbl{color:var(--gold2)}
+.bt.active .bt-ico{filter:drop-shadow(0 0 4px rgba(255,215,0,.4))}
 
-/* REVENUE SECTION */
-.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
-.rev-card{padding:12px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px}
-.rev-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(240,224,192,.3);margin-bottom:4px}
-.rev-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold2)}
-.rev-sub{font-size:10px;color:rgba(240,224,192,.25);margin-top:2px}
-.pack-dist{padding:12px 16px;display:flex;flex-direction:column;gap:6px}
-.pd-row{display:flex;align-items:center;gap:8px}
-.pd-name{font-size:12px;letter-spacing:1px;width:70px;flex-shrink:0}
-.pd-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
-.pd-bar{height:100%;border-radius:3px;transition:width .5s}
-.pd-count{font-size:11px;color:rgba(240,224,192,.35);width:30px;text-align:right;flex-shrink:0}
+/* TABS */
+.tab{display:none;padding-bottom:90px}
+.tab.active{display:block}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;gap:8px;padding:12px 16px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gold2);border-bottom:1px solid rgba(212,168,67,.08);position:sticky;top:56px;background:rgba(11,26,17,.97);z-index:10;backdrop-filter:blur(4px)}
+.sh-sub{font-size:11px;color:rgba(212,168,67,.3);margin-left:auto;letter-spacing:1px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px 16px}
+.kpi{padding:14px;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.08);border-radius:4px;text-align:center}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;margin-bottom:3px}
+.kpi-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,224,192,.3)}
+.gold{color:var(--gold2)}.green{color:var(--green2)}.blue{color:var(--blue2)}.prem{color:var(--prem2)}.orange{color:var(--orange2)}
+
+/* SEARCH + FILTER */
+.sfbar{padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.06);display:flex;flex-direction:column;gap:8px}
+.sinp{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.15);color:var(--ivory);padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:2px;outline:none}
+.sinp::placeholder{color:rgba(240,224,192,.2)}
+.sinp:focus{border-color:rgba(212,168,67,.4)}
+.pf-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.pf-row::-webkit-scrollbar{display:none}
+.pfbtn{flex-shrink:0;padding:4px 10px;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;border:1px solid rgba(212,168,67,.15);background:transparent;color:rgba(212,168,67,.4);border-radius:10px;cursor:pointer}
+.pfbtn.on{color:var(--gold2);border-color:rgba(212,168,67,.35);background:rgba(212,168,67,.07)}
+.pfbtn.s.on{color:var(--blue2);border-color:rgba(32,96,192,.4);background:rgba(32,96,192,.08)}
+.pfbtn.p.on{color:var(--green2);border-color:rgba(80,255,144,.4);background:rgba(80,255,144,.06)}
+.pfbtn.e.on{color:var(--prem2);border-color:rgba(128,64,192,.4);background:rgba(128,64,192,.06)}
+.pfbtn.v.on{color:#ff8060;border-color:rgba(192,64,32,.4);background:rgba(192,64,32,.06)}
+
+/* USER CARDS */
+.ulist{padding:8px 16px;display:flex;flex-direction:column;gap:6px}
+.ucard{padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px;cursor:pointer;transition:border-color .15s}
+.ucard:hover{border-color:rgba(212,168,67,.2)}
+.uc-top{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.uav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;flex-shrink:0}
+.uav.free{background:rgba(212,168,67,.15);color:var(--gold2)}
+.uav.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
+.uav.pro{background:rgba(80,255,144,.12);color:var(--green2)}
+.uav.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
+.uav.vip{background:rgba(192,64,32,.15);color:#ff8060}
+.uav.admin{background:rgba(255,215,0,.2);color:var(--gold2)}
+.uname{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--gold2);flex:1}
+.upbadge{font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:8px;font-family:'Bebas Neue',sans-serif}
+.upbadge.free{background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.2)}
+.upbadge.starter{background:rgba(32,96,192,.08);color:var(--blue2);border:1px solid rgba(32,96,192,.2)}
+.upbadge.pro{background:rgba(80,255,144,.06);color:var(--green2);border:1px solid rgba(80,255,144,.2)}
+.upbadge.elite{background:rgba(128,64,192,.08);color:var(--prem2);border:1px solid rgba(128,64,192,.2)}
+.upbadge.vip{background:rgba(192,64,32,.08);color:#ff8060;border:1px solid rgba(192,64,32,.2)}
+.uemail{font-size:12px;color:rgba(240,224,192,.4);margin-bottom:4px}
+.umeta{display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.28)}
+
+/* FORM BLOCKS */
+.fblock{padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(212,168,67,.07)}
+.ftitle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold2);margin-bottom:12px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fg{margin-bottom:8px}
+.fl{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,168,67,.4);margin-bottom:4px}
+.fif{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(212,168,67,.18);color:var(--ivory);padding:9px 11px;font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:2px;outline:none}
+.fif:focus{border-color:var(--gold2)}
+.fif::placeholder{color:rgba(240,224,192,.2)}
+.fbtn{width:100%;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer;transition:filter .15s;margin-top:2px}
+.fbtn:hover{filter:brightness(1.1)}
+.fbtn.gold{background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:var(--felt)}
+.fbtn.blue{background:linear-gradient(135deg,#0d2a5a,var(--blue2),#0d2a5a);color:#fff}
+.fbtn.red{background:rgba(196,32,32,.1);color:var(--red2);border:1px solid rgba(196,32,32,.2)}
+
+/* ITEM CARDS */
+.ilist{padding:8px 16px;display:flex;flex-direction:column;gap:6px}
+.icard{padding:12px 14px;background:rgba(0,0,0,.25);border-radius:4px}
+.icard.gold-border{border:1px solid rgba(212,168,67,.15)}
+.icard.blue-border{border:1px solid rgba(32,96,192,.18)}
+.itop{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.iname{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;flex:1}
+.ibadge{font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid}
+.imeta{font-size:11px;color:rgba(240,224,192,.3);margin-bottom:6px;line-height:1.6}
+.ilink{font-size:11px;color:rgba(240,224,192,.25);background:rgba(0,0,0,.3);padding:5px 8px;border-radius:2px;margin-bottom:6px;word-break:break-all;font-family:monospace}
+.ibtns{display:flex;gap:6px}
+.ibtn{flex:1;padding:7px;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;border-radius:2px;cursor:pointer;text-align:center}
+.ibtn.copy{background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.2)}
+.ibtn.copyb{background:rgba(32,96,192,.1);color:var(--blue2);border:1px solid rgba(32,96,192,.2)}
+.ibtn.del{background:rgba(196,32,32,.07);color:var(--red2);border:1px solid rgba(196,32,32,.18)}
+
+/* REVENUE */
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px}
+.rcard{padding:12px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px}
+.rlbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,224,192,.3);margin-bottom:4px}
+.rval{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold2)}
+.rsub{font-size:10px;color:rgba(240,224,192,.2);margin-top:2px}
+.pbar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.pbar-name{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;width:60px;flex-shrink:0}
+.pbar-wrap{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.pbar{height:100%;border-radius:3px}
+.pbar-n{font-size:10px;color:rgba(240,224,192,.3);width:24px;text-align:right;flex-shrink:0}
+
+/* SLIDER */
+.slider-wrap{padding:4px 0}
+.slider-track{display:flex;justify-content:space-between;font-size:10px;color:rgba(212,168,67,.3);margin-top:2px}
+.slider-val{color:var(--gold2);font-family:'Bebas Neue',sans-serif;font-size:18px;text-align:center}
+input[type=range]{width:100%;accent-color:var(--gold2)}
+
+/* DETAIL MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.show{display:flex}
+.dmodal{background:var(--felt2);border:1px solid rgba(212,168,67,.2);border-radius:8px 8px 0 0;width:100%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto}
+.dmhdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(212,168,67,.1)}
+.dmav{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;flex-shrink:0}
+.dmav.free{background:rgba(212,168,67,.15);color:var(--gold2)}
+.dmav.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
+.dmav.pro{background:rgba(80,255,144,.12);color:var(--green2)}
+.dmav.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
+.dmav.vip{background:rgba(192,64,32,.15);color:#ff8060}
+.dmav.admin{background:rgba(255,215,0,.2);color:var(--gold2)}
+.dmname{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--gold2);flex:1;line-height:1.1}
+.dmx{background:none;border:none;color:rgba(212,168,67,.4);font-size:20px;cursor:pointer;padding:0}
+.dmx:hover{color:var(--gold2)}
+.dmrow{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(212,168,67,.05);font-size:13px}
+.dmrow:last-child{border:none}
+.dmkey{color:rgba(240,224,192,.3);letter-spacing:1px;width:90px;flex-shrink:0;font-size:10px;text-transform:uppercase;padding-top:1px}
+.dmval{color:var(--ivory);flex:1;line-height:1.5}
+.dmactions{margin-top:14px;padding-top:12px;border-top:1px solid rgba(212,168,67,.08);display:flex;flex-direction:column;gap:8px}
+
+/* TOAST */
+.toast-adm{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(26,58,42,.97);border:1px solid rgba(80,255,144,.3);color:var(--green2);padding:9px 18px;border-radius:20px;font-size:12px;z-index:999;white-space:nowrap;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;display:none}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:rgba(240,224,192,.2)}
+.empty-ico{font-size:36px;margin-bottom:8px}
+
+/* CLUB ACCESS BUTTON */
+.club-access{margin:16px;padding:16px;background:linear-gradient(135deg,rgba(192,64,32,.12),rgba(255,128,96,.08));border:1px solid rgba(192,64,32,.3);border-radius:6px;text-align:center;cursor:pointer}
+.club-access:hover{background:linear-gradient(135deg,rgba(192,64,32,.2),rgba(255,128,96,.14))}
+.ca-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#ff8060;margin-bottom:4px}
+.ca-sub{font-size:12px;color:rgba(240,224,192,.4)}
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN SCREEN ══ -->
+<!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">⚜ WheelCaller</div>
-    <div class="login-sub">Panneau Administrateur</div>
-    <div class="login-title">🔐 ACCÈS RESTREINT</div>
-    <input type="password" class="fi" id="adminPwd" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')adminLogin()">
-    <button class="btn-login" onclick="adminLogin()">⚜ ACCÉDER AU PANNEAU</button>
-    <div class="login-err" id="loginErr">Mot de passe incorrect.</div>
+  <div class="lbox">
+    <div class="llogo">⚜ WheelCaller</div>
+    <div class="lsub">wheelcaller-app.vercel.app/admin.html</div>
+    <div class="ladmin">🔐 ACCÈS ADMINISTRATEUR</div>
+    <input type="email" class="fi" id="aPwd" placeholder="sdb.consulting.pro@gmail.com" onkeydown="if(event.key==='Enter')document.getElementById('aPwd2').focus()">
+    <input type="password" class="fi" id="aPwd2" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')aLogin()">
+    <button class="lbtn" onclick="aLogin()">⚜ ACCÉDER AU PANNEAU</button>
+    <div class="lerr" id="lerr">Email ou mot de passe incorrect.</div>
   </div>
 </div>
 
-<!-- ══ ADMIN APP ══ -->
+<!-- ADMIN APP -->
 <div id="adminApp">
 
-  <!-- NAV -->
   <nav>
-    <div class="nav-logo">⚜ WheelCaller <small>PANNEAU ADMINISTRATEUR</small></div>
-    <button class="nav-btn" onclick="exportCSV()">📥 EXPORT</button>
-    <button class="nav-btn" onclick="adminLogout()">↩ QUITTER</button>
+    <div class="nav-logo">⚜ WheelCaller <small>PANNEAU ADMIN · sdb.consulting.pro@gmail.com</small></div>
+    <div class="nav-badge">⚙ ADMIN</div>
+    <button class="nav-btn" onclick="exportCSV()">📥 CSV</button>
+    <button class="nav-btn red" onclick="aLogout()">↩</button>
   </nav>
 
-  <!-- TAB: USERS -->
-  <div id="tabUsers">
-    <!-- KPI -->
+  <!-- TAB USERS -->
+  <div id="tUsers" class="tab active">
+    <div class="sh">👥 UTILISATEURS INSCRITS <span class="sh-sub" id="uCount">—</span></div>
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-val gold" id="kpiTotal">0</div><div class="kpi-lbl">Inscrits total</div></div>
-      <div class="kpi"><div class="kpi-val green" id="kpiPaying">0</div><div class="kpi-lbl">Abonnés payants</div></div>
-      <div class="kpi"><div class="kpi-val blue" id="kpiToday">0</div><div class="kpi-lbl">Inscrits aujourd'hui</div></div>
-      <div class="kpi"><div class="kpi-val prem" id="kpiVip">0</div><div class="kpi-lbl">VIP actifs</div></div>
+      <div class="kpi"><div class="kpi-val gold" id="kTotal">0</div><div class="kpi-lbl">Total inscrits</div></div>
+      <div class="kpi"><div class="kpi-val green" id="kPaying">0</div><div class="kpi-lbl">Abonnés payants</div></div>
+      <div class="kpi"><div class="kpi-val blue" id="kToday">0</div><div class="kpi-lbl">Inscrits aujourd'hui</div></div>
+      <div class="kpi"><div class="kpi-val prem" id="kVip">0</div><div class="kpi-lbl">VIP actifs</div></div>
     </div>
-
-    <!-- SEARCH -->
-    <div class="search-wrap">
-      <input type="text" class="search-inp" id="searchInp" placeholder="🔍 Rechercher par nom ou email..." oninput="filterUsers()">
+    <div class="sfbar">
+      <input type="text" class="sinp" id="sInp" placeholder="🔍 Nom, prénom ou email..." oninput="filterU()">
+      <div class="pf-row">
+        <button class="pfbtn on" data-f="all" onclick="setF('all',this)">TOUS</button>
+        <button class="pfbtn" data-f="free" onclick="setF('free',this)">FREE</button>
+        <button class="pfbtn s" data-f="starter" onclick="setF('starter',this)">STARTER</button>
+        <button class="pfbtn p" data-f="pro" onclick="setF('pro',this)">PRO</button>
+        <button class="pfbtn e" data-f="elite" onclick="setF('elite',this)">ELITE</button>
+        <button class="pfbtn v" data-f="vip" onclick="setF('vip',this)">VIP</button>
+      </div>
     </div>
-
-    <!-- PACK FILTER -->
-    <div class="pack-filter">
-      <button class="pf-btn active" data-pack="all" onclick="setPackFilter('all',this)">TOUS</button>
-      <button class="pf-btn free" data-pack="free" onclick="setPackFilter('free',this)">FREE</button>
-      <button class="pf-btn starter" data-pack="starter" onclick="setPackFilter('starter',this)">STARTER</button>
-      <button class="pf-btn pro" data-pack="pro" onclick="setPackFilter('pro',this)">PRO</button>
-      <button class="pf-btn elite" data-pack="elite" onclick="setPackFilter('elite',this)">ELITE</button>
-      <button class="pf-btn vip" data-pack="vip" onclick="setPackFilter('vip',this)">VIP</button>
-    </div>
-
-    <div class="sh">
-      <span>👥 UTILISATEURS</span>
-      <span class="sh-count" id="listCount">0 résultat(s)</span>
-    </div>
-
-    <div class="user-list" id="userList"></div>
+    <div class="ulist" id="uList"></div>
   </div>
 
-  <!-- TAB: REVENUE -->
-  <div id="tabRevenue" style="display:none;padding-bottom:80px">
-    <div class="sh">💰 REVENUS ESTIMÉS</div>
+  <!-- TAB REVENUE -->
+  <div id="tRevenue" class="tab">
+    <div class="sh">💰 REVENUS & ANALYTICS</div>
     <div class="rev-grid">
-      <div class="rev-card"><div class="rev-label">MRR estimé</div><div class="rev-val" id="revMRR">0€</div><div class="rev-sub">Revenus mensuels</div></div>
-      <div class="rev-card"><div class="rev-label">ARR estimé</div><div class="rev-val" id="revARR">0€</div><div class="rev-sub">Revenus annuels</div></div>
-      <div class="rev-card"><div class="rev-label">Payants</div><div class="rev-val" id="revPaying">0</div><div class="rev-sub">Abonnés actifs</div></div>
-      <div class="rev-card"><div class="rev-label">Conversion</div><div class="rev-val" id="revConv">0%</div><div class="rev-sub">FREE → Payant</div></div>
+      <div class="rcard"><div class="rlbl">MRR estimé</div><div class="rval" id="rMRR">0€</div><div class="rsub">Mensuel</div></div>
+      <div class="rcard"><div class="rlbl">ARR estimé</div><div class="rval" id="rARR">0€</div><div class="rsub">Annuel</div></div>
+      <div class="rcard"><div class="rlbl">Payants</div><div class="rval" id="rPay">0</div><div class="rsub">Abonnés actifs</div></div>
+      <div class="rcard"><div class="rlbl">Conversion</div><div class="rval" id="rConv">0%</div><div class="rsub">FREE → Payant</div></div>
     </div>
-
     <div class="sh">📊 RÉPARTITION PACKS</div>
-    <div class="pack-dist" id="packDist"></div>
+    <div style="padding:14px 16px" id="pDist"></div>
   </div>
 
-  <!-- TAB: PROMO CODES -->
-  <div id="tabPromo" style="display:none;padding-bottom:80px">
+  <!-- TAB PROMOS -->
+  <div id="tPromos" class="tab">
     <div class="sh">🎟️ CODES PROMO</div>
-
-    <!-- Create form -->
-    <div style="padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(212,168,67,.08)">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold2);margin-bottom:12px">✦ CRÉER UN CODE</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Code *</div>
-          <input type="text" id="newCode" class="fi" placeholder="WELCOME20" style="margin:0;text-transform:uppercase">
+    <div class="fblock">
+      <div class="ftitle">✦ CRÉER UN CODE PROMO</div>
+      <div class="fgrid">
+        <div class="fg">
+          <label class="fl">Code *</label>
+          <input type="text" class="fif" id="pCode" placeholder="SUMMER30" style="text-transform:uppercase">
         </div>
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Réduction *</div>
-          <select id="newDiscount" class="fi" style="margin:0">
+        <div class="fg">
+          <label class="fl">Réduction</label>
+          <select class="fif" id="pDisc">
             <option value="10">-10%</option>
             <option value="20" selected>-20%</option>
             <option value="30">-30%</option>
@@ -261,501 +260,481 @@ nav{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid rg
           </select>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Type</div>
-          <select id="newType" class="fi" style="margin:0">
+      <div class="fgrid">
+        <div class="fg">
+          <label class="fl">Type</label>
+          <select class="fif" id="pType">
             <option value="percent">% réduction</option>
             <option value="free_trial">Essai gratuit</option>
             <option value="influencer">Influenceur</option>
             <option value="partner">Partenaire</option>
           </select>
         </div>
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Utilisations max</div>
-          <input type="number" id="newLimit" class="fi" placeholder="∞ illimité" style="margin:0" min="1">
+        <div class="fg">
+          <label class="fl">Utilisations max</label>
+          <input type="number" class="fif" id="pLimit" placeholder="∞ illimité" min="1">
         </div>
       </div>
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Note (optionnel)</div>
-        <input type="text" id="newNote" class="fi" placeholder="Campagne Instagram Juin..." style="margin:0">
+      <div class="fg">
+        <label class="fl">Note</label>
+        <input type="text" class="fif" id="pNote" placeholder="Campagne Instagram Juin...">
       </div>
-      <button onclick="createPromo()" style="width:100%;padding:10px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer">✦ CRÉER CE CODE</button>
+      <button class="fbtn gold" onclick="createPromo()">✦ CRÉER CE CODE</button>
     </div>
-
-    <!-- Promo list -->
-    <div style="padding:10px 16px;display:flex;flex-direction:column;gap:6px" id="promoList"></div>
+    <div class="ilist" id="pList"></div>
   </div>
 
-  <!-- TAB: AFFILIATION -->
-  <div id="tabAff" style="display:none;padding-bottom:80px">
+  <!-- TAB AFFILIÉS -->
+  <div id="tAffs" class="tab">
     <div class="sh">🔗 LIENS AFFILIÉS</div>
-
-    <!-- Create affiliate link -->
-    <div style="padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(212,168,67,.08)">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold2);margin-bottom:12px">✦ CRÉER UN LIEN AFFILIÉ</div>
-
-      <div style="margin-bottom:8px">
-        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Nom de l'affilié *</div>
-        <input type="text" id="affName" class="fi" placeholder="Jean Dupont / @influenceur" style="margin:0">
+    <div class="fblock">
+      <div class="ftitle">✦ CRÉER UN LIEN AFFILIÉ</div>
+      <div class="fg">
+        <label class="fl">Nom de l'affilié *</label>
+        <input type="text" class="fif" id="aName" placeholder="Jean Dupont / @influenceur2025">
       </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Code UTM *</div>
-          <input type="text" id="affSlug" class="fi" placeholder="jean2025" style="margin:0;text-transform:lowercase">
+      <div class="fgrid">
+        <div class="fg">
+          <label class="fl">Code UTM *</label>
+          <input type="text" class="fif" id="aSlug" placeholder="jean2025" style="text-transform:lowercase">
         </div>
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">RevShare %</div>
-          <div style="position:relative">
-            <input type="range" id="affRevshare" min="5" max="50" value="20" oninput="document.getElementById('affRevVal').textContent=this.value+'%'" style="width:100%;margin-top:8px;accent-color:var(--gold2)">
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(212,168,67,.3);margin-top:2px"><span>5%</span><span id="affRevVal" style="color:var(--gold2);font-family:'Bebas Neue',sans-serif;font-size:16px">20%</span><span>50%</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">CPA (€ par conv.)</div>
-          <input type="number" id="affCpa" class="fi" placeholder="0" style="margin:0" min="0" value="0">
-        </div>
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Type affilié</div>
-          <select id="affType" class="fi" style="margin:0">
-            <option value="influencer">Influenceur</option>
-            <option value="partner">Partenaire business</option>
-            <option value="media">Média / Blog</option>
-            <option value="friend">Recommandation</option>
+        <div class="fg">
+          <label class="fl">Type affilié</label>
+          <select class="fif" id="aType">
+            <option value="influencer">👤 Influenceur</option>
+            <option value="partner">🤝 Partenaire</option>
+            <option value="media">📰 Média / Blog</option>
+            <option value="friend">⭐ Recommandation</option>
           </select>
         </div>
       </div>
-
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Note</div>
-        <input type="text" id="affNote" class="fi" placeholder="Contact Instagram, deal négocié le..." style="margin:0">
+      <div class="fg">
+        <label class="fl">RevShare — <span id="rsVal" style="color:var(--gold2);font-family:'Bebas Neue',sans-serif;font-size:16px">20%</span></label>
+        <div class="slider-wrap">
+          <input type="range" id="rsSlider" min="5" max="50" value="20" oninput="document.getElementById('rsVal').textContent=this.value+'%'">
+          <div class="slider-track"><span>5%</span><span>15%</span><span>25%</span><span>35%</span><span>50%</span></div>
+        </div>
       </div>
-
-      <button onclick="createAff()" style="width:100%;padding:10px;background:linear-gradient(135deg,#204080,#60aaff,#204080);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer">🔗 GÉNÉRER LE LIEN</button>
+      <div class="fgrid">
+        <div class="fg">
+          <label class="fl">CPA fixe (€/conv.)</label>
+          <input type="number" class="fif" id="aCpa" placeholder="0" min="0" value="0">
+        </div>
+        <div class="fg">
+          <label class="fl">Note</label>
+          <input type="text" class="fif" id="aNote" placeholder="Deal négocié le...">
+        </div>
+      </div>
+      <button class="fbtn blue" onclick="createAff()">🔗 GÉNÉRER LE LIEN AFFILIÉ</button>
     </div>
+    <div class="ilist" id="aList"></div>
+  </div>
 
-    <!-- Aff list -->
-    <div style="padding:10px 16px;display:flex;flex-direction:column;gap:6px" id="affList"></div>
+  <!-- TAB CLUB -->
+  <div id="tClub" class="tab">
+    <div class="sh">👑 WHEELCALLER CLUB · ACCÈS ADMIN</div>
+    <div class="club-access" onclick="openClub()">
+      <div class="ca-title">👑 OUVRIR LE WHEELCALLER CLUB</div>
+      <div class="ca-sub">Accès direct sans reconnexion · Panneau admin club</div>
+    </div>
+    <div class="sh" style="top:auto;position:relative">📊 STATS CLUB</div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val prem" id="cMembers">0</div><div class="kpi-lbl">Membres VIP</div></div>
+      <div class="kpi"><div class="kpi-val orange" id="cVideos">12</div><div class="kpi-lbl">Vidéos publiées</div></div>
+      <div class="kpi"><div class="kpi-val blue" id="cMessages">0</div><div class="kpi-lbl">Messages chat</div></div>
+      <div class="kpi"><div class="kpi-val green" id="cCoaching">3</div><div class="kpi-lbl">Sessions coaching</div></div>
+    </div>
+    <div class="sh" style="top:auto;position:relative">👥 MEMBRES VIP</div>
+    <div class="ulist" id="clubMembers"></div>
   </div>
 
   <!-- BOTTOM TAB -->
-  <div class="bottom-tab">
-    <div class="bt-item active" id="bt-users" onclick="switchTab('users')">
-      <div class="bt-ico">👥</div><div class="bt-lbl">Inscrits</div>
-    </div>
-    <div class="bt-item" id="bt-revenue" onclick="switchTab('revenue')">
-      <div class="bt-ico">💰</div><div class="bt-lbl">Revenus</div>
-    </div>
-    <div class="bt-item" id="bt-promo" onclick="switchTab('promo')">
-      <div class="bt-ico">🎟️</div><div class="bt-lbl">Promos</div>
-    </div>
-    <div class="bt-item" id="bt-aff" onclick="switchTab('aff')">
-      <div class="bt-ico">🔗</div><div class="bt-lbl">Affiliés</div>
-    </div>
-    <div class="bt-item" onclick="window.open('index.html','_blank')">
-      <div class="bt-ico">🌐</div><div class="bt-lbl">Site</div>
-    </div>
+  <div class="btab">
+    <div class="bt active" id="bt-users" onclick="sw('Users')"><div class="bt-ico">👥</div><div class="bt-lbl">Inscrits</div></div>
+    <div class="bt" id="bt-revenue" onclick="sw('Revenue')"><div class="bt-ico">💰</div><div class="bt-lbl">Revenus</div></div>
+    <div class="bt" id="bt-promos" onclick="sw('Promos')"><div class="bt-ico">🎟️</div><div class="bt-lbl">Promos</div></div>
+    <div class="bt" id="bt-affs" onclick="sw('Affs')"><div class="bt-ico">🔗</div><div class="bt-lbl">Affiliés</div></div>
+    <div class="bt" id="bt-club" onclick="sw('Club')"><div class="bt-ico">👑</div><div class="bt-lbl">Club</div></div>
   </div>
 </div>
 
 <!-- DETAIL MODAL -->
 <div class="overlay" id="detailModal">
-  <div class="detail-modal" id="detailContent"></div>
+  <div class="dmodal" id="detailContent"></div>
 </div>
+
+<!-- TOAST -->
+<div class="toast-adm" id="toastAdm"></div>
 
 <script>
 // ══ CONFIG ══
-const ADMIN_PWD = 'WheelCaller2025!'; // Change en prod
-const PACK_PRICES = { free:0, starter:4.99, pro:9.99, elite:19.99, vip:49.99 };
-const PACK_LABELS = { free:'🎲 FREE', starter:'⚡ STARTER', pro:'🎯 PRO', elite:'💎 ELITE', vip:'👑 VIP' };
-const PACK_COLORS = { free:'gold', starter:'blue', pro:'green', elite:'prem', vip:'red' };
+const ADMIN_EMAIL_CFG = 'sdb.consulting.pro@gmail.com';
+const ADMIN_PWD_CFG   = 'WheelCaller2025!';
+const BASE_URL        = 'https://wheelcaller-app.vercel.app';
+const PACK_PRICES     = {free:0,starter:4.99,pro:9.99,elite:19.99,vip:49.99};
+const PACK_LABELS     = {free:'🎲 FREE',starter:'⚡ STARTER',pro:'🎯 PRO',elite:'💎 ELITE',vip:'👑 VIP'};
+const PACK_COLORS     = {free:'#d4a843',starter:'#60aaff',pro:'#50ff90',elite:'#c090ff',vip:'#ff8060'};
 
-let users = [];
-let filteredUsers = [];
-let activePackFilter = 'all';
+let users=[], filtered=[], packFilter='all';
 
-// ══ LOGIN ══
-function adminLogin(){
-  const pwd = document.getElementById('adminPwd').value;
-  if(pwd === ADMIN_PWD){
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminApp').style.display = 'block';
-    sessionStorage.setItem('wc_admin', '1');
-    loadUsers();
+// ══ AUTH ══
+function aLogin(){
+  const em=document.getElementById('aPwd').value.trim();
+  const pw=document.getElementById('aPwd2').value;
+  if(em===ADMIN_EMAIL_CFG && pw===ADMIN_PWD_CFG){
+    sessionStorage.setItem('wc_adm','1');
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminApp').style.display='block';
+    init();
   } else {
-    const err = document.getElementById('loginErr');
-    err.classList.add('show');
-    setTimeout(() => err.classList.remove('show'), 2000);
+    const e=document.getElementById('lerr');
+    e.classList.add('show');
+    setTimeout(()=>e.classList.remove('show'),2500);
   }
 }
 
-function adminLogout(){
-  sessionStorage.removeItem('wc_admin');
+function aLogout(){
+  sessionStorage.removeItem('wc_adm');
   location.reload();
 }
 
-// Auto-login check
-if(sessionStorage.getItem('wc_admin')){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminApp').style.display = 'block';
+function openClub(){
+  // Pass admin token to club via localStorage then open
+  localStorage.setItem('wc_club_admin','1');
+  window.open('club.html','_blank');
 }
 
-// ══ LOAD USERS ══
-function loadUsers(){
-  // Load from localStorage (in prod: fetch from Supabase)
-  const raw = [];
+// Auto-login
+if(sessionStorage.getItem('wc_adm')){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminApp').style.display='block';
+  window.addEventListener('DOMContentLoaded',init);
+}
 
-  // Read all localStorage keys that look like user data
-  for(let i = 0; i < localStorage.length; i++){
-    const key = localStorage.key(i);
-    if(key === 'wc_user' || key.startsWith('wc_user_')){
-      try{
-        const u = JSON.parse(localStorage.getItem(key));
-        if(u && u.email) raw.push(u);
-      }catch(e){}
+document.getElementById('aPwd2').addEventListener('keydown',e=>{if(e.key==='Enter')aLogin();});
+
+// ══ INIT ══
+function init(){
+  loadUsers();
+  loadPromos();
+  loadAffs();
+  renderPromos();
+  renderAffs();
+  renderClubMembers();
+}
+
+// ══ USERS ══
+function loadUsers(){
+  const raw=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k==='wc_user'||k.startsWith('wc_user_')){
+      try{const u=JSON.parse(localStorage.getItem(k));if(u&&u.email)raw.push(u);}catch(e){}
     }
   }
-
-  // Also add demo data so admin is not empty
-  const demos = [
-    { prenom:'Simon', nom:'Nayro', email:'simon@wheelcaller.com', pack:'vip', createdAt:new Date().toISOString() },
-    { prenom:'Marie', nom:'Dupont', email:'marie.d@gmail.com', pack:'pro', createdAt:new Date(Date.now()-86400000).toISOString() },
-    { prenom:'Thomas', nom:'Bernard', email:'thomas.b@hotmail.fr', pack:'starter', createdAt:new Date(Date.now()-172800000).toISOString() },
-    { prenom:'Julie', nom:'Martin', email:'julie.m@gmail.com', pack:'free', createdAt:new Date(Date.now()-259200000).toISOString() },
-    { prenom:'Alex', nom:'Rousseau', email:'alex.r@yahoo.fr', pack:'elite', createdAt:new Date(Date.now()-345600000).toISOString() },
-    { prenom:'Lucas', nom:'Petit', email:'lucas.p@gmail.com', pack:'pro', createdAt:new Date(Date.now()-432000000).toISOString() },
-    { prenom:'Emma', nom:'Leroy', email:'emma.l@gmail.com', pack:'free', createdAt:new Date(Date.now()-518400000).toISOString() },
-    { prenom:'Nathan', nom:'Moreau', email:'nathan.m@hotmail.fr', pack:'starter', createdAt:new Date(Date.now()-604800000).toISOString() },
+  const demos=[
+    {prenom:'Simon',nom:'Dubreil',email:'sdb.consulting.pro@gmail.com',pack:'vip',phone:'+33 6 12 34 56 78',isAdmin:true,createdAt:new Date().toISOString()},
+    {prenom:'Marie',nom:'Dupont',email:'marie.d@gmail.com',pack:'pro',phone:'+33 6 23 45 67 89',createdAt:new Date(Date.now()-86400000).toISOString()},
+    {prenom:'Thomas',nom:'Bernard',email:'thomas.b@hotmail.fr',pack:'starter',createdAt:new Date(Date.now()-172800000).toISOString()},
+    {prenom:'Julie',nom:'Martin',email:'julie.m@gmail.com',pack:'free',createdAt:new Date(Date.now()-259200000).toISOString()},
+    {prenom:'Alex',nom:'Rousseau',email:'alex.r@yahoo.fr',pack:'elite',phone:'+33 6 45 67 89 01',createdAt:new Date(Date.now()-345600000).toISOString()},
+    {prenom:'Lucas',nom:'Petit',email:'lucas.p@gmail.com',pack:'pro',createdAt:new Date(Date.now()-432000000).toISOString()},
+    {prenom:'Emma',nom:'Leroy',email:'emma.l@gmail.com',pack:'vip',phone:'+33 6 56 78 90 12',createdAt:new Date(Date.now()-518400000).toISOString()},
+    {prenom:'Nathan',nom:'Moreau',email:'nathan.m@hotmail.fr',pack:'starter',createdAt:new Date(Date.now()-604800000).toISOString()},
   ];
-
-  // Merge real + demo (avoid duplicates by email)
-  const emails = new Set(raw.map(u=>u.email));
-  demos.forEach(d => { if(!emails.has(d.email)) raw.push(d); });
-
-  users = raw.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-  filterUsers();
+  const emails=new Set(raw.map(u=>u.email));
+  demos.forEach(d=>{if(!emails.has(d.email))raw.push(d);});
+  users=raw.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  filterU();
   updateKPIs();
   updateRevenue();
 }
 
-// ══ FILTER ══
-function filterUsers(){
-  const search = document.getElementById('searchInp').value.toLowerCase();
-  filteredUsers = users.filter(u => {
-    const matchPack = activePackFilter === 'all' || u.pack === activePackFilter;
-    const matchSearch = !search ||
-      (u.prenom+' '+u.nom).toLowerCase().includes(search) ||
-      u.email.toLowerCase().includes(search);
-    return matchPack && matchSearch;
+function filterU(){
+  const s=document.getElementById('sInp').value.toLowerCase();
+  filtered=users.filter(u=>{
+    const mp=packFilter==='all'||u.pack===packFilter;
+    const ms=!s||(u.prenom+' '+u.nom).toLowerCase().includes(s)||u.email.toLowerCase().includes(s)||(u.phone||'').includes(s);
+    return mp&&ms;
   });
   renderUsers();
 }
 
-function setPackFilter(pack, btn){
-  activePackFilter = pack;
-  document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterUsers();
+function setF(pack,btn){
+  packFilter=pack;
+  document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  filterU();
 }
 
-// ══ RENDER USERS ══
 function renderUsers(){
-  const list = document.getElementById('userList');
-  document.getElementById('listCount').textContent = filteredUsers.length + ' résultat(s)';
-
-  if(!filteredUsers.length){
-    list.innerHTML = `<div class="empty"><div class="empty-ico">👤</div><div class="empty-txt">Aucun utilisateur trouvé</div></div>`;
-    return;
-  }
-
-  list.innerHTML = filteredUsers.map((u,i) => {
-    const initials = (u.prenom[0]||'?') + (u.nom[0]||'?');
-    const date = new Date(u.createdAt).toLocaleDateString('fr-FR');
-    const time = new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    return `
-    <div class="user-card" onclick="showDetail(${i})">
+  const el=document.getElementById('uList');
+  document.getElementById('uCount').textContent=filtered.length+' résultat(s)';
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-ico">👤</div><div>Aucun utilisateur</div></div>';return;}
+  el.innerHTML=filtered.map((u,i)=>{
+    const ini=(u.prenom[0]||'?')+(u.nom[0]||'?');
+    const dt=new Date(u.createdAt).toLocaleDateString('fr-FR');
+    const hr=new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const p=u.isAdmin?'admin':u.pack;
+    return `<div class="ucard" onclick="showDetail(${i})">
       <div class="uc-top">
-        <div class="uc-avatar ${u.pack}">${initials}</div>
-        <div class="uc-name">${u.prenom} ${u.nom}</div>
-        <div class="uc-pack ${u.pack}">${PACK_LABELS[u.pack]||u.pack}</div>
+        <div class="uav ${p}">${u.isAdmin?'⚙':ini}</div>
+        <div class="uname">${u.prenom} ${u.nom}</div>
+        <div class="upbadge ${u.pack}">${PACK_LABELS[u.pack]||u.pack}</div>
       </div>
-      <div class="uc-email">${u.email}</div>
-      <div class="uc-meta">
-        <span>📅 ${date}</span>
-        <span>🕐 ${time}</span>
-        <span>💰 ${PACK_PRICES[u.pack]||0}€/mois</span>
+      <div class="uemail">✉ ${u.email}${u.phone?` · 📞 ${u.phone}`:''}</div>
+      <div class="umeta"><span>📅 ${dt} ${hr}</span><span>💰 ${PACK_PRICES[u.pack]||0}€/mois</span>${u.isAdmin?'<span style="color:var(--gold2)">⚙ Admin</span>':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(i){
+  const u=filtered[i];
+  if(!u)return;
+  const ini=(u.prenom[0]||'?')+(u.nom[0]||'?');
+  const p=u.isAdmin?'admin':u.pack;
+  const dt=new Date(u.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const hr=new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('detailContent').innerHTML=`
+    <div class="dmhdr">
+      <div class="dmav ${p}">${u.isAdmin?'⚙':ini}</div>
+      <div>
+        <div class="dmname">${u.prenom} ${u.nom}</div>
+        <div class="upbadge ${u.pack}" style="display:inline-block;margin-top:4px">${PACK_LABELS[u.pack]||u.pack}</div>
+        ${u.isAdmin?'<div style="font-size:10px;color:var(--gold2);letter-spacing:2px;margin-top:4px">⚙ ADMINISTRATEUR</div>':''}
+      </div>
+      <button class="dmx" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dmrow"><div class="dmkey">Prénom</div><div class="dmval">${u.prenom}</div></div>
+    <div class="dmrow"><div class="dmkey">Nom</div><div class="dmval">${u.nom}</div></div>
+    <div class="dmrow"><div class="dmkey">Email</div><div class="dmval" style="color:var(--gold2)">${u.email}</div></div>
+    ${u.phone?`<div class="dmrow"><div class="dmkey">Téléphone</div><div class="dmval">${u.phone}</div></div>`:''}
+    <div class="dmrow"><div class="dmkey">Pack actuel</div><div class="dmval">${PACK_LABELS[u.pack]||u.pack} · ${PACK_PRICES[u.pack]||0}€/mois</div></div>
+    <div class="dmrow"><div class="dmkey">Inscription</div><div class="dmval">${dt} à ${hr}</div></div>
+    <div class="dmrow"><div class="dmkey">Revenu total</div><div class="dmval">${(PACK_PRICES[u.pack]||0).toFixed(2)}€/mois</div></div>
+    <div class="dmactions">
+      <button class="ibtn copy" style="width:100%;padding:9px;font-size:12px" onclick="navigator.clipboard.writeText('${u.email}');toast('✓ Email copié')">📋 COPIER L'EMAIL</button>
+      <button class="ibtn copy" style="width:100%;padding:9px;font-size:12px;color:var(--green2);border-color:rgba(80,255,144,.2)" onclick="changePack('${u.email}')">⬆ CHANGER DE PACK</button>
+      ${!u.isAdmin?`<button class="ibtn del" style="width:100%;padding:9px;font-size:12px" onclick="delUser('${u.email}')">🗑 SUPPRIMER</button>`:''}
+    </div>`;
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetail(){ document.getElementById('detailModal').classList.remove('show'); }
+document.getElementById('detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')closeDetail();});
+
+function changePack(email){
+  const np=prompt('Nouveau pack (free/starter/pro/elite/vip):');
+  if(np&&['free','starter','pro','elite','vip'].includes(np)){
+    const u=users.find(x=>x.email===email);
+    if(u){u.pack=np;closeDetail();filterU();updateKPIs();updateRevenue();toast('✓ Pack mis à jour → '+np.toUpperCase());}
+  }
+}
+
+function delUser(email){
+  if(!confirm('Supprimer '+email+' ?'))return;
+  users=users.filter(u=>u.email!==email);
+  closeDetail();filterU();updateKPIs();updateRevenue();
+}
+
+// ══ KPIs ══
+function updateKPIs(){
+  const td=new Date().toDateString();
+  document.getElementById('kTotal').textContent=users.length;
+  document.getElementById('kPaying').textContent=users.filter(u=>u.pack!=='free').length;
+  document.getElementById('kToday').textContent=users.filter(u=>new Date(u.createdAt).toDateString()===td).length;
+  document.getElementById('kVip').textContent=users.filter(u=>u.pack==='vip').length;
+  document.getElementById('cMembers').textContent=users.filter(u=>u.pack==='vip').length;
+}
+
+function updateRevenue(){
+  const mrr=users.reduce((s,u)=>s+(PACK_PRICES[u.pack]||0),0);
+  const paying=users.filter(u=>u.pack!=='free').length;
+  document.getElementById('rMRR').textContent=mrr.toFixed(0)+'€';
+  document.getElementById('rARR').textContent=(mrr*12).toFixed(0)+'€';
+  document.getElementById('rPay').textContent=paying;
+  document.getElementById('rConv').textContent=users.length?Math.round(paying/users.length*100)+'%':'0%';
+  const max=Math.max(...['free','starter','pro','elite','vip'].map(p=>users.filter(u=>u.pack===p).length),1);
+  document.getElementById('pDist').innerHTML=['free','starter','pro','elite','vip'].map(p=>{
+    const n=users.filter(u=>u.pack===p).length;
+    return `<div class="pbar-row">
+      <div class="pbar-name" style="color:${PACK_COLORS[p]}">${p.toUpperCase()}</div>
+      <div class="pbar-wrap"><div class="pbar" style="width:${Math.round(n/max*100)}%;background:${PACK_COLORS[p]}"></div></div>
+      <div class="pbar-n">${n}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ PROMOS ══
+let promos=[];
+const DEFAULT_PROMOS=[
+  {code:'WELCOME20',discount:20,type:'percent',limit:null,uses:0,note:'Bienvenue',createdAt:new Date().toISOString()},
+  {code:'TRIAL30',discount:100,type:'free_trial',limit:null,uses:0,note:'Essai 30 jours',createdAt:new Date().toISOString()},
+  {code:'PARTNER50',discount:50,type:'partner',limit:null,uses:0,note:'Partenaires',createdAt:new Date().toISOString()},
+  {code:'INFLUENCER',discount:100,type:'influencer',limit:null,uses:0,note:'Influenceurs',createdAt:new Date().toISOString()},
+  {code:'VIP2025',discount:100,type:'influencer',limit:null,uses:0,note:'Pack VIP offert',createdAt:new Date().toISOString()},
+];
+
+function loadPromos(){
+  promos=JSON.parse(localStorage.getItem('wc_promos')||'null');
+  if(!promos||!promos.length){promos=DEFAULT_PROMOS;savePromos();}
+}
+
+function savePromos(){localStorage.setItem('wc_promos',JSON.stringify(promos));}
+
+function createPromo(){
+  const code=document.getElementById('pCode').value.trim().toUpperCase();
+  if(!code){toast('⚠ Entre un code');return;}
+  if(promos.find(p=>p.code===code)){toast('⚠ Ce code existe déjà');return;}
+  promos.unshift({code,discount:parseInt(document.getElementById('pDisc').value),type:document.getElementById('pType').value,limit:document.getElementById('pLimit').value?parseInt(document.getElementById('pLimit').value):null,uses:0,note:document.getElementById('pNote').value.trim(),createdAt:new Date().toISOString()});
+  savePromos();
+  document.getElementById('pCode').value='';
+  document.getElementById('pNote').value='';
+  renderPromos();
+  toast('✓ Code '+code+' créé !');
+}
+
+function delPromo(code){
+  if(!confirm('Supprimer le code '+code+' ?'))return;
+  promos=promos.filter(p=>p.code!==code);
+  savePromos();renderPromos();
+}
+
+function renderPromos(){
+  const el=document.getElementById('pList');
+  if(!el)return;
+  if(!promos.length){el.innerHTML='<div class="empty"><div class="empty-ico">🎟️</div><div>Aucun code promo</div></div>';return;}
+  const tColors={percent:'var(--gold2)',free_trial:'var(--green2)',influencer:'var(--prem2)',partner:'var(--blue2)'};
+  const tLabels={percent:'% RÉDUCTION',free_trial:'ESSAI GRATUIT',influencer:'INFLUENCEUR',partner:'PARTENAIRE'};
+  el.innerHTML=promos.map(p=>{
+    const c=tColors[p.type]||'var(--gold2)';
+    return `<div class="icard gold-border">
+      <div class="itop">
+        <div class="iname" style="color:${c}">${p.code}</div>
+        <div class="ibadge" style="color:${c};border-color:${c}40">-${p.discount}%</div>
+        <div class="ibadge" style="color:${c};border-color:${c}30;font-size:8px;margin-left:4px">${tLabels[p.type]||p.type}</div>
+      </div>
+      <div class="imeta">${p.note?'📝 '+p.note+' · ':''}📅 ${new Date(p.createdAt).toLocaleDateString('fr-FR')} · 🔢 ${p.uses}${p.limit?'/'+p.limit:''} utilisations</div>
+      <div class="ibtns">
+        <button class="ibtn copy" onclick="navigator.clipboard.writeText('${p.code}');toast('✓ Code copié !')">📋 COPIER</button>
+        <button class="ibtn del" onclick="delPromo('${p.code}')">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ══ DETAIL ══
-function showDetail(idx){
-  const u = filteredUsers[idx];
-  if(!u) return;
-  const date = new Date(u.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  const time = new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const initials = (u.prenom[0]||'?') + (u.nom[0]||'?');
+// ══ AFFILIÉS ══
+let affs=[];
 
-  document.getElementById('detailContent').innerHTML = `
-    <div class="dm-hdr">
-      <div class="dm-avatar ${u.pack}">${initials}</div>
-      <div>
-        <div class="dm-name">${u.prenom} ${u.nom}</div>
-        <div class="uc-pack ${u.pack}" style="display:inline-block;margin-top:4px">${PACK_LABELS[u.pack]||u.pack}</div>
+function loadAffs(){
+  affs=JSON.parse(localStorage.getItem('wc_affs')||'[]');
+}
+
+function saveAffs(){localStorage.setItem('wc_affs',JSON.stringify(affs));}
+
+function createAff(){
+  const name=document.getElementById('aName').value.trim();
+  const slug=document.getElementById('aSlug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if(!name||!slug){toast('⚠ Nom et code UTM requis');return;}
+  if(affs.find(a=>a.slug===slug)){toast('⚠ Ce code UTM existe déjà');return;}
+  const revshare=parseInt(document.getElementById('rsSlider').value);
+  const cpa=parseFloat(document.getElementById('aCpa').value)||0;
+  const type=document.getElementById('aType').value;
+  const note=document.getElementById('aNote').value.trim();
+  const link=`${BASE_URL}/?ref=${slug}&utm_source=affiliate&utm_medium=${type}&utm_campaign=${slug}`;
+  affs.unshift({name,slug,revshare,cpa,type,note,link,clicks:0,conversions:0,revenue:0,createdAt:new Date().toISOString()});
+  saveAffs();
+  document.getElementById('aName').value='';
+  document.getElementById('aSlug').value='';
+  document.getElementById('aNote').value='';
+  document.getElementById('aCpa').value='0';
+  document.getElementById('rsSlider').value=20;
+  document.getElementById('rsVal').textContent='20%';
+  renderAffs();
+  toast('✓ Lien affilié créé pour '+name);
+}
+
+function delAff(slug){
+  if(!confirm('Supprimer ce lien affilié ?'))return;
+  affs=affs.filter(a=>a.slug!==slug);
+  saveAffs();renderAffs();
+}
+
+function renderAffs(){
+  const el=document.getElementById('aList');
+  if(!el)return;
+  if(!affs.length){el.innerHTML='<div class="empty"><div class="empty-ico">🔗</div><div>Aucun lien affilié</div></div>';return;}
+  const tLabels={influencer:'👤 Influenceur',partner:'🤝 Partenaire',media:'📰 Média',friend:'⭐ Recommandation'};
+  el.innerHTML=affs.map(a=>{
+    const mrr=(a.revenue||(a.conversions*9.99))*(a.revshare/100);
+    return `<div class="icard blue-border">
+      <div class="itop">
+        <div class="iname" style="color:var(--blue2)">${a.name}</div>
+        <div class="ibadge" style="color:var(--green2);border-color:rgba(80,255,144,.3)">RS ${a.revshare}%</div>
+        ${a.cpa?`<div class="ibadge" style="color:var(--gold2);border-color:rgba(212,168,67,.3);margin-left:4px">CPA ${a.cpa}€</div>`:''}
       </div>
-      <button class="dm-x" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="dm-row"><div class="dm-key">Email</div><div class="dm-val">${u.email}</div></div>
-    <div class="dm-row"><div class="dm-key">Pack</div><div class="dm-val">${PACK_LABELS[u.pack]||u.pack} · ${PACK_PRICES[u.pack]||0}€/mois</div></div>
-    <div class="dm-row"><div class="dm-key">Inscription</div><div class="dm-val">${date} à ${time}</div></div>
-    <div class="dm-row"><div class="dm-key">Prénom</div><div class="dm-val">${u.prenom}</div></div>
-    <div class="dm-row"><div class="dm-key">Nom</div><div class="dm-val">${u.nom}</div></div>
-    <div class="dm-actions">
-      <div class="dm-btn upgrade" onclick="upgradePack('${u.email}')">⬆ CHANGER DE PACK</div>
-      <div class="dm-btn delete" onclick="deleteUser('${u.email}')">🗑 SUPPRIMER CET UTILISATEUR</div>
-    </div>
-  `;
-  document.getElementById('detailModal').classList.add('show');
+      <div class="imeta">${tLabels[a.type]||a.type}${a.note?' · 📝 '+a.note:''}</div>
+      <div class="ilink">${a.link}</div>
+      <div class="imeta">👆 ${a.clicks} clics · ✓ ${a.conversions} conv. · 💰 ~${mrr.toFixed(2)}€/mois · 📅 ${new Date(a.createdAt).toLocaleDateString('fr-FR')}</div>
+      <div class="ibtns">
+        <button class="ibtn copyb" onclick="navigator.clipboard.writeText('${a.link}');toast('✓ Lien copié !')">📋 COPIER LE LIEN</button>
+        <button class="ibtn del" onclick="delAff('${a.slug}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function closeDetail(){
-  document.getElementById('detailModal').classList.remove('show');
-}
-
-document.getElementById('detailModal').addEventListener('click', e => {
-  if(e.target === document.getElementById('detailModal')) closeDetail();
-});
-
-function upgradePack(email){
-  const pack = prompt('Nouveau pack (free/starter/pro/elite/vip) :');
-  if(pack && ['free','starter','pro','elite','vip'].includes(pack)){
-    const u = users.find(x=>x.email===email);
-    if(u){ u.pack = pack; closeDetail(); filterUsers(); updateKPIs(); updateRevenue(); alert('✓ Pack mis à jour !'); }
-  }
-}
-
-function deleteUser(email){
-  if(confirm(`Supprimer l'utilisateur ${email} ?`)){
-    users = users.filter(u=>u.email!==email);
-    closeDetail(); filterUsers(); updateKPIs(); updateRevenue();
-  }
-}
-
-// ══ KPIs ══
-function updateKPIs(){
-  const today = new Date().toDateString();
-  const paying = users.filter(u=>u.pack!=='free').length;
-  const todayUsers = users.filter(u=>new Date(u.createdAt).toDateString()===today).length;
-  const vip = users.filter(u=>u.pack==='vip').length;
-  document.getElementById('kpiTotal').textContent = users.length;
-  document.getElementById('kpiPaying').textContent = paying;
-  document.getElementById('kpiToday').textContent = todayUsers;
-  document.getElementById('kpiVip').textContent = vip;
-}
-
-// ══ REVENUE ══
-function updateRevenue(){
-  const mrr = users.reduce((s,u)=>s+(PACK_PRICES[u.pack]||0),0);
-  const paying = users.filter(u=>u.pack!=='free').length;
-  const conv = users.length ? Math.round(paying/users.length*100) : 0;
-
-  document.getElementById('revMRR').textContent = mrr.toFixed(0)+'€';
-  document.getElementById('revARR').textContent = (mrr*12).toFixed(0)+'€';
-  document.getElementById('revPaying').textContent = paying;
-  document.getElementById('revConv').textContent = conv+'%';
-
-  // Pack distribution
-  const packs = ['free','starter','pro','elite','vip'];
-  const max = Math.max(...packs.map(p=>users.filter(u=>u.pack===p).length),1);
-  const colors = {free:'#d4a843',starter:'#60aaff',pro:'#50ff90',elite:'#c090ff',vip:'#ff8060'};
-  document.getElementById('packDist').innerHTML = packs.map(p=>{
-    const count = users.filter(u=>u.pack===p).length;
-    const pct = Math.round(count/max*100);
-    return `<div class="pd-row">
-      <div class="pd-name" style="color:${colors[p]};font-family:'Bebas Neue',sans-serif;letter-spacing:1px">${p.toUpperCase()}</div>
-      <div class="pd-bar-wrap"><div class="pd-bar" style="width:${pct}%;background:${colors[p]}"></div></div>
-      <div class="pd-count">${count}</div>
+// ══ CLUB ══
+function renderClubMembers(){
+  const vips=users.filter(u=>u.pack==='vip');
+  const el=document.getElementById('clubMembers');
+  if(!el)return;
+  if(!vips.length){el.innerHTML='<div class="empty"><div class="empty-ico">👑</div><div>Aucun membre VIP</div></div>';return;}
+  el.innerHTML=vips.map((u,i)=>{
+    const ini=(u.prenom[0]||'?')+(u.nom[0]||'?');
+    return `<div class="ucard">
+      <div class="uc-top">
+        <div class="uav vip">${ini}</div>
+        <div class="uname">${u.prenom} ${u.nom}</div>
+        <div class="upbadge vip">👑 VIP</div>
+      </div>
+      <div class="uemail">✉ ${u.email}${u.phone?` · 📞 ${u.phone}`:''}</div>
+      <div class="umeta"><span>📅 ${new Date(u.createdAt).toLocaleDateString('fr-FR')}</span></div>
     </div>`;
   }).join('');
 }
 
 // ══ TABS ══
-function switchTab(tab){
-  ['users','revenue','promo','aff'].forEach(t=>{
-    const el=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-    if(el) el.style.display = t===tab?'block':'none';
-  });
-  document.querySelectorAll('.bt-item').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('bt-'+tab);
-  if(btn) btn.classList.add('active');
-  if(tab==='promo') renderPromos();
-  if(tab==='aff') renderAffs();
-}
-
-// ══ PROMO CODES ══
-let promos = JSON.parse(localStorage.getItem('wc_promos')||'[]');
-
-const DEFAULT_PROMOS = [
-  {code:'WELCOME20', discount:20, type:'percent', limit:null, uses:0, note:'Bienvenue', createdAt:new Date().toISOString()},
-  {code:'TRIAL30', discount:100, type:'free_trial', limit:null, uses:0, note:'Essai 30j', createdAt:new Date().toISOString()},
-  {code:'PARTNER50', discount:50, type:'partner', limit:null, uses:0, note:'Partenaires', createdAt:new Date().toISOString()},
-  {code:'INFLUENCER', discount:100, type:'influencer', limit:null, uses:0, note:'Influenceurs', createdAt:new Date().toISOString()},
-  {code:'VIP2025', discount:100, type:'influencer', limit:null, uses:0, note:'Pack VIP offert', createdAt:new Date().toISOString()},
-];
-if(!promos.length){ promos=DEFAULT_PROMOS; savePromos(); }
-
-function savePromos(){ localStorage.setItem('wc_promos', JSON.stringify(promos)); }
-
-function createPromo(){
-  const code = document.getElementById('newCode').value.trim().toUpperCase();
-  const discount = parseInt(document.getElementById('newDiscount').value);
-  const type = document.getElementById('newType').value;
-  const limit = document.getElementById('newLimit').value ? parseInt(document.getElementById('newLimit').value) : null;
-  const note = document.getElementById('newNote').value.trim();
-  if(!code){ alert('Entre un code.'); return; }
-  if(promos.find(p=>p.code===code)){ alert('Ce code existe déjà.'); return; }
-  promos.unshift({code, discount, type, limit, uses:0, note, createdAt:new Date().toISOString()});
-  savePromos();
-  document.getElementById('newCode').value='';
-  document.getElementById('newNote').value='';
-  renderPromos();
-}
-
-function deletePromo(code){
-  if(!confirm(`Supprimer le code ${code} ?`)) return;
-  promos = promos.filter(p=>p.code!==code);
-  savePromos(); renderPromos();
-}
-
-function copyPromo(code){
-  navigator.clipboard.writeText(code).then(()=>showToastAdmin('✓ Code copié : '+code));
-}
-
-function renderPromos(){
-  const el = document.getElementById('promoList');
-  if(!el) return;
-  if(!promos.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:rgba(240,224,192,.2);font-size:13px">Aucun code promo</div>'; return; }
-  el.innerHTML = promos.map(p=>{
-    const typeColors={percent:'var(--gold2)',free_trial:'var(--green2)',influencer:'var(--prem2)',partner:'var(--blue2)'};
-    const typeLabels={percent:`-${p.discount}%`,free_trial:'ESSAI GRATUIT',influencer:'INFLUENCEUR',partner:'PARTENAIRE'};
-    const color = typeColors[p.type]||'var(--gold2)';
-    const label = typeLabels[p.type]||p.type;
-    const uses = p.limit ? `${p.uses}/${p.limit}` : `${p.uses} utilisations`;
-    return `<div style="padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.1);border-radius:4px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:${color};flex:1">${p.code}</div>
-        <div style="font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid ${color};color:${color};opacity:.8">${label}</div>
-      </div>
-      ${p.note?`<div style="font-size:12px;color:rgba(240,224,192,.4);margin-bottom:6px">📝 ${p.note}</div>`:''}
-      <div style="display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);margin-bottom:8px">
-        <span>📅 ${new Date(p.createdAt).toLocaleDateString('fr-FR')}</span>
-        <span>🔢 ${uses}</span>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button onclick="copyPromo('${p.code}')" style="flex:1;padding:7px;background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">📋 COPIER</button>
-        <button onclick="deletePromo('${p.code}')" style="padding:7px 12px;background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ══ AFFILIATE LINKS ══
-let affs = JSON.parse(localStorage.getItem('wc_affs')||'[]');
-const BASE_URL = 'https://wheelcaller-app.vercel.app';
-
-function saveAffs(){ localStorage.setItem('wc_affs', JSON.stringify(affs)); }
-
-function createAff(){
-  const name = document.getElementById('affName').value.trim();
-  const slug = document.getElementById('affSlug').value.trim().toLowerCase().replace(/\s+/g,'-');
-  const revshare = parseInt(document.getElementById('affRevshare').value);
-  const cpa = parseFloat(document.getElementById('affCpa').value)||0;
-  const type = document.getElementById('affType').value;
-  const note = document.getElementById('affNote').value.trim();
-  if(!name||!slug){ alert('Nom et code UTM requis.'); return; }
-  if(affs.find(a=>a.slug===slug)){ alert('Ce code UTM existe déjà.'); return; }
-  const link = `${BASE_URL}/?ref=${slug}&utm_source=affiliate&utm_medium=${type}&utm_campaign=${slug}`;
-  affs.unshift({name, slug, revshare, cpa, type, note, link, clicks:0, conversions:0, createdAt:new Date().toISOString()});
-  saveAffs();
-  document.getElementById('affName').value='';
-  document.getElementById('affSlug').value='';
-  document.getElementById('affNote').value='';
-  document.getElementById('affCpa').value='0';
-  document.getElementById('affRevshare').value='20';
-  document.getElementById('affRevVal').textContent='20%';
-  renderAffs();
-  showToastAdmin('✓ Lien affilié créé pour '+name);
-}
-
-function deleteAff(slug){
-  if(!confirm('Supprimer ce lien affilié ?')) return;
-  affs = affs.filter(a=>a.slug!==slug);
-  saveAffs(); renderAffs();
-}
-
-function copyAff(link){
-  navigator.clipboard.writeText(link).then(()=>showToastAdmin('✓ Lien copié !'));
-}
-
-function renderAffs(){
-  const el = document.getElementById('affList');
-  if(!el) return;
-  if(!affs.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:rgba(240,224,192,.2);font-size:13px">Aucun lien affilié créé</div>'; return; }
-  const typeLabels={influencer:'👤 Influenceur',partner:'🤝 Partenaire',media:'📰 Média',friend:'⭐ Recommandation'};
-  el.innerHTML = affs.map(a=>{
-    const mrr = a.conversions * 9.99 * (a.revshare/100);
-    return `<div style="padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(32,96,192,.15);border-radius:4px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--blue2);flex:1">${a.name}</div>
-        <div style="font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid rgba(32,96,192,.3);color:var(--blue2)">${typeLabels[a.type]||a.type}</div>
-      </div>
-      <div style="display:flex;gap:10px;margin-bottom:6px">
-        <span style="font-size:12px;color:var(--green2);font-family:'Bebas Neue',sans-serif;letter-spacing:1px">RevShare ${a.revshare}%</span>
-        ${a.cpa?`<span style="font-size:12px;color:var(--gold2);font-family:'Bebas Neue',sans-serif;letter-spacing:1px">CPA ${a.cpa}€</span>`:''}
-      </div>
-      <div style="font-size:11px;color:rgba(240,224,192,.25);background:rgba(0,0,0,.3);padding:6px 8px;border-radius:2px;margin-bottom:6px;word-break:break-all;font-family:monospace">${a.link}</div>
-      ${a.note?`<div style="font-size:11px;color:rgba(240,224,192,.35);margin-bottom:6px">📝 ${a.note}</div>`:''}
-      <div style="display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);margin-bottom:8px">
-        <span>👆 ${a.clicks} clics</span>
-        <span>✓ ${a.conversions} conv.</span>
-        <span>💰 ~${mrr.toFixed(2)}€/mois</span>
-        <span>📅 ${new Date(a.createdAt).toLocaleDateString('fr-FR')}</span>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button onclick="copyAff('${a.link}')" style="flex:1;padding:7px;background:rgba(32,96,192,.1);color:var(--blue2);border:1px solid rgba(32,96,192,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">📋 COPIER LE LIEN</button>
-        <button onclick="deleteAff('${a.slug}')" style="padding:7px 12px;background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ══ TOAST ══
-function showToastAdmin(msg){
-  const t=document.createElement('div');
-  t.textContent=msg;
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a3020;border:1px solid rgba(80,255,144,.3);color:#50ff90;padding:8px 16px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;font-family:Bebas Neue,sans-serif;letter-spacing:1px';
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2500);
+function sw(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.bt').forEach(b=>b.classList.remove('active'));
+  document.getElementById('t'+tab).classList.add('active');
+  document.getElementById('bt-'+tab.toLowerCase()).classList.add('active');
+  if(tab==='Club'){renderClubMembers();document.getElementById('cMessages').textContent=Math.floor(Math.random()*80)+20;}
 }
 
 // ══ EXPORT CSV ══
 function exportCSV(){
-  const header = 'Prénom,Nom,Email,Pack,Prix/mois,Date inscription\n';
-  const rows = users.map(u=>`${u.prenom},${u.nom},${u.email},${u.pack},${PACK_PRICES[u.pack]||0}€,${new Date(u.createdAt).toLocaleDateString('fr-FR')}`).join('\n');
-  const blob = new Blob([header+rows],{type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'wheelcaller-users-'+new Date().toISOString().split('T')[0]+'.csv';
+  const hdr='Prénom,Nom,Email,Téléphone,Pack,Prix/mois,Date inscription\n';
+  const rows=users.map(u=>`${u.prenom},${u.nom},${u.email},${u.phone||''},${u.pack},${PACK_PRICES[u.pack]||0}€,${new Date(u.createdAt).toLocaleDateString('fr-FR')}`).join('\n');
+  const b=new Blob([hdr+rows],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='wheelcaller-users-'+new Date().toISOString().split('T')[0]+'.csv';
   a.click();
+  toast('✓ Export CSV téléchargé');
 }
 
-// Auto-load if already logged in
-if(sessionStorage.getItem('wc_admin')) loadUsers();
+// ══ TOAST ══
+function toast(msg){
+  const t=document.getElementById('toastAdm');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.display='none',2500);
+}
+
+// Auto-init
+if(sessionStorage.getItem('wc_adm'))init();
 </script>
 </body>
 </html>
