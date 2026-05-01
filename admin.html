@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WheelCaller · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d4a843;--gold2:#FFD700;--gold3:#8a6418;
+  --felt:#0b1a11;--felt2:#0f1e14;--felt3:#162a1c;
+  --green:#1a9944;--green2:#50ff90;
+  --red:#c42020;--red2:#ff6060;
+  --blue:#2060c0;--blue2:#60aaff;
+  --prem:#8040c0;--prem2:#c090ff;
+  --ivory:#f0e0c0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--felt);color:var(--ivory);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
+
+/* ══ LOGIN SCREEN ══ */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(212,168,67,.08),transparent);
+}
+.login-box{
+  background:rgba(0,0,0,.4);border:1px solid rgba(212,168,67,.2);border-radius:6px;
+  padding:32px 24px;width:100%;max-width:360px;text-align:center;
+}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold2);margin-bottom:4px}
+.login-sub{font-size:10px;letter-spacing:3px;color:rgba(212,168,67,.3);margin-bottom:28px;text-transform:uppercase}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold2);margin-bottom:20px}
+.fi{width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(212,168,67,.2);color:var(--ivory);
+    padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;border-radius:2px;
+    outline:none;margin-bottom:12px}
+.fi:focus{border-color:var(--gold2)}
+.fi::placeholder{color:rgba(240,224,192,.2)}
+.btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));
+           color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;
+           border:none;border-radius:2px;cursor:pointer;margin-top:4px}
+.btn-login:hover{filter:brightness(1.1)}
+.login-err{font-size:12px;color:var(--red2);margin-top:10px;display:none;
+           padding:8px;background:rgba(196,32,32,.1);border:1px solid rgba(196,32,32,.2);border-radius:2px}
+.login-err.show{display:block}
+
+/* ══ ADMIN APP ══ */
+#adminApp{display:none}
+
+/* NAV */
+nav{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.15);
+    background:rgba(0,0,0,.5);position:sticky;top:0;z-index:50;gap:10px;backdrop-filter:blur(8px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--gold2);flex:1}
+.nav-logo small{font-size:9px;letter-spacing:2px;color:rgba(212,168,67,.3);display:block;font-family:'Barlow Condensed',sans-serif}
+.nav-btn{padding:5px 12px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
+         border:1px solid rgba(212,168,67,.2);background:transparent;color:var(--gold);cursor:pointer;border-radius:2px}
+.nav-btn:hover{background:rgba(212,168,67,.08)}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:16px}
+.kpi{padding:14px;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.1);border-radius:4px;text-align:center}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;margin-bottom:4px}
+.kpi-val.gold{color:var(--gold2)}
+.kpi-val.green{color:var(--green2)}
+.kpi-val.blue{color:var(--blue2)}
+.kpi-val.prem{color:var(--prem2)}
+.kpi-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,224,192,.35)}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;gap:8px;padding:12px 16px 8px;
+    font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold2);
+    border-bottom:1px solid rgba(212,168,67,.1)}
+.sh-count{font-size:11px;color:rgba(212,168,67,.35);margin-left:auto;letter-spacing:1px}
+
+/* PACK FILTER */
+.pack-filter{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(212,168,67,.06)}
+.pack-filter::-webkit-scrollbar{display:none}
+.pf-btn{flex-shrink:0;padding:4px 12px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;
+        border:1px solid rgba(212,168,67,.15);background:transparent;color:rgba(212,168,67,.5);
+        border-radius:10px;cursor:pointer}
+.pf-btn.active{background:rgba(212,168,67,.1);color:var(--gold2);border-color:rgba(212,168,67,.3)}
+.pf-btn.free.active{color:var(--gold2);border-color:rgba(212,168,67,.4)}
+.pf-btn.starter.active{color:var(--blue2);border-color:rgba(32,96,192,.4);background:rgba(32,96,192,.1)}
+.pf-btn.pro.active{color:var(--green2);border-color:rgba(80,255,144,.4);background:rgba(80,255,144,.07)}
+.pf-btn.elite.active{color:var(--prem2);border-color:rgba(128,64,192,.4);background:rgba(128,64,192,.07)}
+.pf-btn.vip.active{color:#ff8060;border-color:rgba(192,64,32,.4);background:rgba(192,64,32,.07)}
+
+/* SEARCH */
+.search-wrap{padding:10px 16px;border-bottom:1px solid rgba(212,168,67,.06)}
+.search-inp{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(212,168,67,.15);color:var(--ivory);
+            padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:2px;outline:none}
+.search-inp::placeholder{color:rgba(240,224,192,.2)}
+.search-inp:focus{border-color:rgba(212,168,67,.4)}
+
+/* USER TABLE */
+.user-list{padding:8px 16px 80px;display:flex;flex-direction:column;gap:6px}
+.user-card{padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px;cursor:pointer;transition:border-color .15s}
+.user-card:hover{border-color:rgba(212,168,67,.25)}
+.uc-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.uc-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+           font-family:'Bebas Neue',sans-serif;font-size:14px;flex-shrink:0}
+.uc-avatar.free{background:rgba(212,168,67,.15);color:var(--gold2)}
+.uc-avatar.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
+.uc-avatar.pro{background:rgba(80,255,144,.12);color:var(--green2)}
+.uc-avatar.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
+.uc-avatar.vip{background:rgba(192,64,32,.15);color:#ff8060}
+.uc-name{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--gold2);flex:1}
+.uc-pack{font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:8px;font-family:'Bebas Neue',sans-serif;white-space:nowrap}
+.uc-pack.free{background:rgba(212,168,67,.1);color:var(--gold2);border:1px solid rgba(212,168,67,.2)}
+.uc-pack.starter{background:rgba(32,96,192,.1);color:var(--blue2);border:1px solid rgba(32,96,192,.2)}
+.uc-pack.pro{background:rgba(80,255,144,.08);color:var(--green2);border:1px solid rgba(80,255,144,.2)}
+.uc-pack.elite{background:rgba(128,64,192,.1);color:var(--prem2);border:1px solid rgba(128,64,192,.2)}
+.uc-pack.vip{background:rgba(192,64,32,.1);color:#ff8060;border:1px solid rgba(192,64,32,.2)}
+.uc-email{font-size:12px;color:rgba(240,224,192,.4);margin-bottom:4px}
+.uc-meta{display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);letter-spacing:.5px}
+.uc-meta span{display:flex;align-items:center;gap:4px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;color:rgba(240,224,192,.25)}
+.empty-ico{font-size:36px;margin-bottom:10px}
+.empty-txt{font-size:13px;letter-spacing:1px}
+
+/* DETAIL MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;
+         align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(4px)}
+.overlay.show{display:flex}
+.detail-modal{background:var(--felt2);border:1px solid rgba(212,168,67,.2);border-radius:6px 6px 0 0;
+              width:100%;max-width:500px;padding:20px;max-height:80vh;overflow-y:auto}
+.dm-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(212,168,67,.1)}
+.dm-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px}
+.dm-avatar.free{background:rgba(212,168,67,.15);color:var(--gold2)}
+.dm-avatar.starter{background:rgba(32,96,192,.15);color:var(--blue2)}
+.dm-avatar.pro{background:rgba(80,255,144,.12);color:var(--green2)}
+.dm-avatar.elite{background:rgba(128,64,192,.15);color:var(--prem2)}
+.dm-avatar.vip{background:rgba(192,64,32,.15);color:#ff8060}
+.dm-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--gold2);flex:1}
+.dm-x{background:none;border:none;color:rgba(212,168,67,.4);font-size:18px;cursor:pointer}
+.dm-x:hover{color:var(--gold2)}
+.dm-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(212,168,67,.06);font-size:13px}
+.dm-row:last-child{border:none}
+.dm-key{color:rgba(240,224,192,.35);letter-spacing:1px;width:90px;flex-shrink:0;font-size:11px;text-transform:uppercase}
+.dm-val{color:var(--ivory);flex:1}
+.dm-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(212,168,67,.08)}
+.dm-btn{width:100%;padding:9px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
+        border-radius:2px;cursor:pointer;text-align:center}
+.dm-btn.upgrade{background:rgba(80,255,144,.08);color:var(--green2);border:1px solid rgba(80,255,144,.2)}
+.dm-btn.delete{background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2)}
+
+/* BOTTOM TAB */
+.bottom-tab{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(8,20,10,.96);
+            border-top:1px solid rgba(212,168,67,.12);backdrop-filter:blur(10px);z-index:40}
+.bt-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;cursor:pointer;gap:3px}
+.bt-ico{font-size:18px}
+.bt-lbl{font-size:9px;letter-spacing:1px;color:rgba(212,168,67,.4);text-transform:uppercase}
+.bt-item.active .bt-lbl{color:var(--gold2)}
+
+/* REVENUE SECTION */
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
+.rev-card{padding:12px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:4px}
+.rev-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(240,224,192,.3);margin-bottom:4px}
+.rev-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold2)}
+.rev-sub{font-size:10px;color:rgba(240,224,192,.25);margin-top:2px}
+.pack-dist{padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.pd-row{display:flex;align-items:center;gap:8px}
+.pd-name{font-size:12px;letter-spacing:1px;width:70px;flex-shrink:0}
+.pd-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.pd-bar{height:100%;border-radius:3px;transition:width .5s}
+.pd-count{font-size:11px;color:rgba(240,224,192,.35);width:30px;text-align:right;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">⚜ WheelCaller</div>
+    <div class="login-sub">Panneau Administrateur</div>
+    <div class="login-title">🔐 ACCÈS RESTREINT</div>
+    <input type="password" class="fi" id="adminPwd" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button class="btn-login" onclick="adminLogin()">⚜ ACCÉDER AU PANNEAU</button>
+    <div class="login-err" id="loginErr">Mot de passe incorrect.</div>
+  </div>
+</div>
+
+<!-- ══ ADMIN APP ══ -->
+<div id="adminApp">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">⚜ WheelCaller <small>PANNEAU ADMINISTRATEUR</small></div>
+    <button class="nav-btn" onclick="exportCSV()">📥 EXPORT</button>
+    <button class="nav-btn" onclick="adminLogout()">↩ QUITTER</button>
+  </nav>
+
+  <!-- TAB: USERS -->
+  <div id="tabUsers">
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val gold" id="kpiTotal">0</div><div class="kpi-lbl">Inscrits total</div></div>
+      <div class="kpi"><div class="kpi-val green" id="kpiPaying">0</div><div class="kpi-lbl">Abonnés payants</div></div>
+      <div class="kpi"><div class="kpi-val blue" id="kpiToday">0</div><div class="kpi-lbl">Inscrits aujourd'hui</div></div>
+      <div class="kpi"><div class="kpi-val prem" id="kpiVip">0</div><div class="kpi-lbl">VIP actifs</div></div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <input type="text" class="search-inp" id="searchInp" placeholder="🔍 Rechercher par nom ou email..." oninput="filterUsers()">
+    </div>
+
+    <!-- PACK FILTER -->
+    <div class="pack-filter">
+      <button class="pf-btn active" data-pack="all" onclick="setPackFilter('all',this)">TOUS</button>
+      <button class="pf-btn free" data-pack="free" onclick="setPackFilter('free',this)">FREE</button>
+      <button class="pf-btn starter" data-pack="starter" onclick="setPackFilter('starter',this)">STARTER</button>
+      <button class="pf-btn pro" data-pack="pro" onclick="setPackFilter('pro',this)">PRO</button>
+      <button class="pf-btn elite" data-pack="elite" onclick="setPackFilter('elite',this)">ELITE</button>
+      <button class="pf-btn vip" data-pack="vip" onclick="setPackFilter('vip',this)">VIP</button>
+    </div>
+
+    <div class="sh">
+      <span>👥 UTILISATEURS</span>
+      <span class="sh-count" id="listCount">0 résultat(s)</span>
+    </div>
+
+    <div class="user-list" id="userList"></div>
+  </div>
+
+  <!-- TAB: REVENUE -->
+  <div id="tabRevenue" style="display:none;padding-bottom:80px">
+    <div class="sh">💰 REVENUS ESTIMÉS</div>
+    <div class="rev-grid">
+      <div class="rev-card"><div class="rev-label">MRR estimé</div><div class="rev-val" id="revMRR">0€</div><div class="rev-sub">Revenus mensuels</div></div>
+      <div class="rev-card"><div class="rev-label">ARR estimé</div><div class="rev-val" id="revARR">0€</div><div class="rev-sub">Revenus annuels</div></div>
+      <div class="rev-card"><div class="rev-label">Payants</div><div class="rev-val" id="revPaying">0</div><div class="rev-sub">Abonnés actifs</div></div>
+      <div class="rev-card"><div class="rev-label">Conversion</div><div class="rev-val" id="revConv">0%</div><div class="rev-sub">FREE → Payant</div></div>
+    </div>
+
+    <div class="sh">📊 RÉPARTITION PACKS</div>
+    <div class="pack-dist" id="packDist"></div>
+  </div>
+
+  <!-- TAB: PROMO CODES -->
+  <div id="tabPromo" style="display:none;padding-bottom:80px">
+    <div class="sh">🎟️ CODES PROMO</div>
+
+    <!-- Create form -->
+    <div style="padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(212,168,67,.08)">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold2);margin-bottom:12px">✦ CRÉER UN CODE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Code *</div>
+          <input type="text" id="newCode" class="fi" placeholder="WELCOME20" style="margin:0;text-transform:uppercase">
+        </div>
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Réduction *</div>
+          <select id="newDiscount" class="fi" style="margin:0">
+            <option value="10">-10%</option>
+            <option value="20" selected>-20%</option>
+            <option value="30">-30%</option>
+            <option value="50">-50%</option>
+            <option value="100">100% GRATUIT</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Type</div>
+          <select id="newType" class="fi" style="margin:0">
+            <option value="percent">% réduction</option>
+            <option value="free_trial">Essai gratuit</option>
+            <option value="influencer">Influenceur</option>
+            <option value="partner">Partenaire</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Utilisations max</div>
+          <input type="number" id="newLimit" class="fi" placeholder="∞ illimité" style="margin:0" min="1">
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Note (optionnel)</div>
+        <input type="text" id="newNote" class="fi" placeholder="Campagne Instagram Juin..." style="margin:0">
+      </div>
+      <button onclick="createPromo()" style="width:100%;padding:10px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer">✦ CRÉER CE CODE</button>
+    </div>
+
+    <!-- Promo list -->
+    <div style="padding:10px 16px;display:flex;flex-direction:column;gap:6px" id="promoList"></div>
+  </div>
+
+  <!-- TAB: AFFILIATION -->
+  <div id="tabAff" style="display:none;padding-bottom:80px">
+    <div class="sh">🔗 LIENS AFFILIÉS</div>
+
+    <!-- Create affiliate link -->
+    <div style="padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(212,168,67,.08)">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold2);margin-bottom:12px">✦ CRÉER UN LIEN AFFILIÉ</div>
+
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Nom de l'affilié *</div>
+        <input type="text" id="affName" class="fi" placeholder="Jean Dupont / @influenceur" style="margin:0">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Code UTM *</div>
+          <input type="text" id="affSlug" class="fi" placeholder="jean2025" style="margin:0;text-transform:lowercase">
+        </div>
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">RevShare %</div>
+          <div style="position:relative">
+            <input type="range" id="affRevshare" min="5" max="50" value="20" oninput="document.getElementById('affRevVal').textContent=this.value+'%'" style="width:100%;margin-top:8px;accent-color:var(--gold2)">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(212,168,67,.3);margin-top:2px"><span>5%</span><span id="affRevVal" style="color:var(--gold2);font-family:'Bebas Neue',sans-serif;font-size:16px">20%</span><span>50%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">CPA (€ par conv.)</div>
+          <input type="number" id="affCpa" class="fi" placeholder="0" style="margin:0" min="0" value="0">
+        </div>
+        <div>
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Type affilié</div>
+          <select id="affType" class="fi" style="margin:0">
+            <option value="influencer">Influenceur</option>
+            <option value="partner">Partenaire business</option>
+            <option value="media">Média / Blog</option>
+            <option value="friend">Recommandation</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(212,168,67,.4);margin-bottom:4px;text-transform:uppercase">Note</div>
+        <input type="text" id="affNote" class="fi" placeholder="Contact Instagram, deal négocié le..." style="margin:0">
+      </div>
+
+      <button onclick="createAff()" style="width:100%;padding:10px;background:linear-gradient(135deg,#204080,#60aaff,#204080);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer">🔗 GÉNÉRER LE LIEN</button>
+    </div>
+
+    <!-- Aff list -->
+    <div style="padding:10px 16px;display:flex;flex-direction:column;gap:6px" id="affList"></div>
+  </div>
+
+  <!-- BOTTOM TAB -->
+  <div class="bottom-tab">
+    <div class="bt-item active" id="bt-users" onclick="switchTab('users')">
+      <div class="bt-ico">👥</div><div class="bt-lbl">Inscrits</div>
+    </div>
+    <div class="bt-item" id="bt-revenue" onclick="switchTab('revenue')">
+      <div class="bt-ico">💰</div><div class="bt-lbl">Revenus</div>
+    </div>
+    <div class="bt-item" id="bt-promo" onclick="switchTab('promo')">
+      <div class="bt-ico">🎟️</div><div class="bt-lbl">Promos</div>
+    </div>
+    <div class="bt-item" id="bt-aff" onclick="switchTab('aff')">
+      <div class="bt-ico">🔗</div><div class="bt-lbl">Affiliés</div>
+    </div>
+    <div class="bt-item" onclick="window.open('index.html','_blank')">
+      <div class="bt-ico">🌐</div><div class="bt-lbl">Site</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detailModal">
+  <div class="detail-modal" id="detailContent"></div>
+</div>
+
+<script>
+// ══ CONFIG ══
+const ADMIN_PWD = 'WheelCaller2025!'; // Change en prod
+const PACK_PRICES = { free:0, starter:4.99, pro:9.99, elite:19.99, vip:49.99 };
+const PACK_LABELS = { free:'🎲 FREE', starter:'⚡ STARTER', pro:'🎯 PRO', elite:'💎 ELITE', vip:'👑 VIP' };
+const PACK_COLORS = { free:'gold', starter:'blue', pro:'green', elite:'prem', vip:'red' };
+
+let users = [];
+let filteredUsers = [];
+let activePackFilter = 'all';
+
+// ══ LOGIN ══
+function adminLogin(){
+  const pwd = document.getElementById('adminPwd').value;
+  if(pwd === ADMIN_PWD){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    sessionStorage.setItem('wc_admin', '1');
+    loadUsers();
+  } else {
+    const err = document.getElementById('loginErr');
+    err.classList.add('show');
+    setTimeout(() => err.classList.remove('show'), 2000);
+  }
+}
+
+function adminLogout(){
+  sessionStorage.removeItem('wc_admin');
+  location.reload();
+}
+
+// Auto-login check
+if(sessionStorage.getItem('wc_admin')){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+}
+
+// ══ LOAD USERS ══
+function loadUsers(){
+  // Load from localStorage (in prod: fetch from Supabase)
+  const raw = [];
+
+  // Read all localStorage keys that look like user data
+  for(let i = 0; i < localStorage.length; i++){
+    const key = localStorage.key(i);
+    if(key === 'wc_user' || key.startsWith('wc_user_')){
+      try{
+        const u = JSON.parse(localStorage.getItem(key));
+        if(u && u.email) raw.push(u);
+      }catch(e){}
+    }
+  }
+
+  // Also add demo data so admin is not empty
+  const demos = [
+    { prenom:'Simon', nom:'Nayro', email:'simon@wheelcaller.com', pack:'vip', createdAt:new Date().toISOString() },
+    { prenom:'Marie', nom:'Dupont', email:'marie.d@gmail.com', pack:'pro', createdAt:new Date(Date.now()-86400000).toISOString() },
+    { prenom:'Thomas', nom:'Bernard', email:'thomas.b@hotmail.fr', pack:'starter', createdAt:new Date(Date.now()-172800000).toISOString() },
+    { prenom:'Julie', nom:'Martin', email:'julie.m@gmail.com', pack:'free', createdAt:new Date(Date.now()-259200000).toISOString() },
+    { prenom:'Alex', nom:'Rousseau', email:'alex.r@yahoo.fr', pack:'elite', createdAt:new Date(Date.now()-345600000).toISOString() },
+    { prenom:'Lucas', nom:'Petit', email:'lucas.p@gmail.com', pack:'pro', createdAt:new Date(Date.now()-432000000).toISOString() },
+    { prenom:'Emma', nom:'Leroy', email:'emma.l@gmail.com', pack:'free', createdAt:new Date(Date.now()-518400000).toISOString() },
+    { prenom:'Nathan', nom:'Moreau', email:'nathan.m@hotmail.fr', pack:'starter', createdAt:new Date(Date.now()-604800000).toISOString() },
+  ];
+
+  // Merge real + demo (avoid duplicates by email)
+  const emails = new Set(raw.map(u=>u.email));
+  demos.forEach(d => { if(!emails.has(d.email)) raw.push(d); });
+
+  users = raw.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  filterUsers();
+  updateKPIs();
+  updateRevenue();
+}
+
+// ══ FILTER ══
+function filterUsers(){
+  const search = document.getElementById('searchInp').value.toLowerCase();
+  filteredUsers = users.filter(u => {
+    const matchPack = activePackFilter === 'all' || u.pack === activePackFilter;
+    const matchSearch = !search ||
+      (u.prenom+' '+u.nom).toLowerCase().includes(search) ||
+      u.email.toLowerCase().includes(search);
+    return matchPack && matchSearch;
+  });
+  renderUsers();
+}
+
+function setPackFilter(pack, btn){
+  activePackFilter = pack;
+  document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterUsers();
+}
+
+// ══ RENDER USERS ══
+function renderUsers(){
+  const list = document.getElementById('userList');
+  document.getElementById('listCount').textContent = filteredUsers.length + ' résultat(s)';
+
+  if(!filteredUsers.length){
+    list.innerHTML = `<div class="empty"><div class="empty-ico">👤</div><div class="empty-txt">Aucun utilisateur trouvé</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filteredUsers.map((u,i) => {
+    const initials = (u.prenom[0]||'?') + (u.nom[0]||'?');
+    const date = new Date(u.createdAt).toLocaleDateString('fr-FR');
+    const time = new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return `
+    <div class="user-card" onclick="showDetail(${i})">
+      <div class="uc-top">
+        <div class="uc-avatar ${u.pack}">${initials}</div>
+        <div class="uc-name">${u.prenom} ${u.nom}</div>
+        <div class="uc-pack ${u.pack}">${PACK_LABELS[u.pack]||u.pack}</div>
+      </div>
+      <div class="uc-email">${u.email}</div>
+      <div class="uc-meta">
+        <span>📅 ${date}</span>
+        <span>🕐 ${time}</span>
+        <span>💰 ${PACK_PRICES[u.pack]||0}€/mois</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ DETAIL ══
+function showDetail(idx){
+  const u = filteredUsers[idx];
+  if(!u) return;
+  const date = new Date(u.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const time = new Date(u.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const initials = (u.prenom[0]||'?') + (u.nom[0]||'?');
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="dm-hdr">
+      <div class="dm-avatar ${u.pack}">${initials}</div>
+      <div>
+        <div class="dm-name">${u.prenom} ${u.nom}</div>
+        <div class="uc-pack ${u.pack}" style="display:inline-block;margin-top:4px">${PACK_LABELS[u.pack]||u.pack}</div>
+      </div>
+      <button class="dm-x" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dm-row"><div class="dm-key">Email</div><div class="dm-val">${u.email}</div></div>
+    <div class="dm-row"><div class="dm-key">Pack</div><div class="dm-val">${PACK_LABELS[u.pack]||u.pack} · ${PACK_PRICES[u.pack]||0}€/mois</div></div>
+    <div class="dm-row"><div class="dm-key">Inscription</div><div class="dm-val">${date} à ${time}</div></div>
+    <div class="dm-row"><div class="dm-key">Prénom</div><div class="dm-val">${u.prenom}</div></div>
+    <div class="dm-row"><div class="dm-key">Nom</div><div class="dm-val">${u.nom}</div></div>
+    <div class="dm-actions">
+      <div class="dm-btn upgrade" onclick="upgradePack('${u.email}')">⬆ CHANGER DE PACK</div>
+      <div class="dm-btn delete" onclick="deleteUser('${u.email}')">🗑 SUPPRIMER CET UTILISATEUR</div>
+    </div>
+  `;
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('detailModal').classList.remove('show');
+}
+
+document.getElementById('detailModal').addEventListener('click', e => {
+  if(e.target === document.getElementById('detailModal')) closeDetail();
+});
+
+function upgradePack(email){
+  const pack = prompt('Nouveau pack (free/starter/pro/elite/vip) :');
+  if(pack && ['free','starter','pro','elite','vip'].includes(pack)){
+    const u = users.find(x=>x.email===email);
+    if(u){ u.pack = pack; closeDetail(); filterUsers(); updateKPIs(); updateRevenue(); alert('✓ Pack mis à jour !'); }
+  }
+}
+
+function deleteUser(email){
+  if(confirm(`Supprimer l'utilisateur ${email} ?`)){
+    users = users.filter(u=>u.email!==email);
+    closeDetail(); filterUsers(); updateKPIs(); updateRevenue();
+  }
+}
+
+// ══ KPIs ══
+function updateKPIs(){
+  const today = new Date().toDateString();
+  const paying = users.filter(u=>u.pack!=='free').length;
+  const todayUsers = users.filter(u=>new Date(u.createdAt).toDateString()===today).length;
+  const vip = users.filter(u=>u.pack==='vip').length;
+  document.getElementById('kpiTotal').textContent = users.length;
+  document.getElementById('kpiPaying').textContent = paying;
+  document.getElementById('kpiToday').textContent = todayUsers;
+  document.getElementById('kpiVip').textContent = vip;
+}
+
+// ══ REVENUE ══
+function updateRevenue(){
+  const mrr = users.reduce((s,u)=>s+(PACK_PRICES[u.pack]||0),0);
+  const paying = users.filter(u=>u.pack!=='free').length;
+  const conv = users.length ? Math.round(paying/users.length*100) : 0;
+
+  document.getElementById('revMRR').textContent = mrr.toFixed(0)+'€';
+  document.getElementById('revARR').textContent = (mrr*12).toFixed(0)+'€';
+  document.getElementById('revPaying').textContent = paying;
+  document.getElementById('revConv').textContent = conv+'%';
+
+  // Pack distribution
+  const packs = ['free','starter','pro','elite','vip'];
+  const max = Math.max(...packs.map(p=>users.filter(u=>u.pack===p).length),1);
+  const colors = {free:'#d4a843',starter:'#60aaff',pro:'#50ff90',elite:'#c090ff',vip:'#ff8060'};
+  document.getElementById('packDist').innerHTML = packs.map(p=>{
+    const count = users.filter(u=>u.pack===p).length;
+    const pct = Math.round(count/max*100);
+    return `<div class="pd-row">
+      <div class="pd-name" style="color:${colors[p]};font-family:'Bebas Neue',sans-serif;letter-spacing:1px">${p.toUpperCase()}</div>
+      <div class="pd-bar-wrap"><div class="pd-bar" style="width:${pct}%;background:${colors[p]}"></div></div>
+      <div class="pd-count">${count}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ TABS ══
+function switchTab(tab){
+  ['users','revenue','promo','aff'].forEach(t=>{
+    const el=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(el) el.style.display = t===tab?'block':'none';
+  });
+  document.querySelectorAll('.bt-item').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('bt-'+tab);
+  if(btn) btn.classList.add('active');
+  if(tab==='promo') renderPromos();
+  if(tab==='aff') renderAffs();
+}
+
+// ══ PROMO CODES ══
+let promos = JSON.parse(localStorage.getItem('wc_promos')||'[]');
+
+const DEFAULT_PROMOS = [
+  {code:'WELCOME20', discount:20, type:'percent', limit:null, uses:0, note:'Bienvenue', createdAt:new Date().toISOString()},
+  {code:'TRIAL30', discount:100, type:'free_trial', limit:null, uses:0, note:'Essai 30j', createdAt:new Date().toISOString()},
+  {code:'PARTNER50', discount:50, type:'partner', limit:null, uses:0, note:'Partenaires', createdAt:new Date().toISOString()},
+  {code:'INFLUENCER', discount:100, type:'influencer', limit:null, uses:0, note:'Influenceurs', createdAt:new Date().toISOString()},
+  {code:'VIP2025', discount:100, type:'influencer', limit:null, uses:0, note:'Pack VIP offert', createdAt:new Date().toISOString()},
+];
+if(!promos.length){ promos=DEFAULT_PROMOS; savePromos(); }
+
+function savePromos(){ localStorage.setItem('wc_promos', JSON.stringify(promos)); }
+
+function createPromo(){
+  const code = document.getElementById('newCode').value.trim().toUpperCase();
+  const discount = parseInt(document.getElementById('newDiscount').value);
+  const type = document.getElementById('newType').value;
+  const limit = document.getElementById('newLimit').value ? parseInt(document.getElementById('newLimit').value) : null;
+  const note = document.getElementById('newNote').value.trim();
+  if(!code){ alert('Entre un code.'); return; }
+  if(promos.find(p=>p.code===code)){ alert('Ce code existe déjà.'); return; }
+  promos.unshift({code, discount, type, limit, uses:0, note, createdAt:new Date().toISOString()});
+  savePromos();
+  document.getElementById('newCode').value='';
+  document.getElementById('newNote').value='';
+  renderPromos();
+}
+
+function deletePromo(code){
+  if(!confirm(`Supprimer le code ${code} ?`)) return;
+  promos = promos.filter(p=>p.code!==code);
+  savePromos(); renderPromos();
+}
+
+function copyPromo(code){
+  navigator.clipboard.writeText(code).then(()=>showToastAdmin('✓ Code copié : '+code));
+}
+
+function renderPromos(){
+  const el = document.getElementById('promoList');
+  if(!el) return;
+  if(!promos.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:rgba(240,224,192,.2);font-size:13px">Aucun code promo</div>'; return; }
+  el.innerHTML = promos.map(p=>{
+    const typeColors={percent:'var(--gold2)',free_trial:'var(--green2)',influencer:'var(--prem2)',partner:'var(--blue2)'};
+    const typeLabels={percent:`-${p.discount}%`,free_trial:'ESSAI GRATUIT',influencer:'INFLUENCEUR',partner:'PARTENAIRE'};
+    const color = typeColors[p.type]||'var(--gold2)';
+    const label = typeLabels[p.type]||p.type;
+    const uses = p.limit ? `${p.uses}/${p.limit}` : `${p.uses} utilisations`;
+    return `<div style="padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.1);border-radius:4px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:${color};flex:1">${p.code}</div>
+        <div style="font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid ${color};color:${color};opacity:.8">${label}</div>
+      </div>
+      ${p.note?`<div style="font-size:12px;color:rgba(240,224,192,.4);margin-bottom:6px">📝 ${p.note}</div>`:''}
+      <div style="display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);margin-bottom:8px">
+        <span>📅 ${new Date(p.createdAt).toLocaleDateString('fr-FR')}</span>
+        <span>🔢 ${uses}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="copyPromo('${p.code}')" style="flex:1;padding:7px;background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">📋 COPIER</button>
+        <button onclick="deletePromo('${p.code}')" style="padding:7px 12px;background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ AFFILIATE LINKS ══
+let affs = JSON.parse(localStorage.getItem('wc_affs')||'[]');
+const BASE_URL = 'https://wheelcaller-app.vercel.app';
+
+function saveAffs(){ localStorage.setItem('wc_affs', JSON.stringify(affs)); }
+
+function createAff(){
+  const name = document.getElementById('affName').value.trim();
+  const slug = document.getElementById('affSlug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const revshare = parseInt(document.getElementById('affRevshare').value);
+  const cpa = parseFloat(document.getElementById('affCpa').value)||0;
+  const type = document.getElementById('affType').value;
+  const note = document.getElementById('affNote').value.trim();
+  if(!name||!slug){ alert('Nom et code UTM requis.'); return; }
+  if(affs.find(a=>a.slug===slug)){ alert('Ce code UTM existe déjà.'); return; }
+  const link = `${BASE_URL}/?ref=${slug}&utm_source=affiliate&utm_medium=${type}&utm_campaign=${slug}`;
+  affs.unshift({name, slug, revshare, cpa, type, note, link, clicks:0, conversions:0, createdAt:new Date().toISOString()});
+  saveAffs();
+  document.getElementById('affName').value='';
+  document.getElementById('affSlug').value='';
+  document.getElementById('affNote').value='';
+  document.getElementById('affCpa').value='0';
+  document.getElementById('affRevshare').value='20';
+  document.getElementById('affRevVal').textContent='20%';
+  renderAffs();
+  showToastAdmin('✓ Lien affilié créé pour '+name);
+}
+
+function deleteAff(slug){
+  if(!confirm('Supprimer ce lien affilié ?')) return;
+  affs = affs.filter(a=>a.slug!==slug);
+  saveAffs(); renderAffs();
+}
+
+function copyAff(link){
+  navigator.clipboard.writeText(link).then(()=>showToastAdmin('✓ Lien copié !'));
+}
+
+function renderAffs(){
+  const el = document.getElementById('affList');
+  if(!el) return;
+  if(!affs.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:rgba(240,224,192,.2);font-size:13px">Aucun lien affilié créé</div>'; return; }
+  const typeLabels={influencer:'👤 Influenceur',partner:'🤝 Partenaire',media:'📰 Média',friend:'⭐ Recommandation'};
+  el.innerHTML = affs.map(a=>{
+    const mrr = a.conversions * 9.99 * (a.revshare/100);
+    return `<div style="padding:12px 14px;background:rgba(0,0,0,.25);border:1px solid rgba(32,96,192,.15);border-radius:4px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--blue2);flex:1">${a.name}</div>
+        <div style="font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid rgba(32,96,192,.3);color:var(--blue2)">${typeLabels[a.type]||a.type}</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--green2);font-family:'Bebas Neue',sans-serif;letter-spacing:1px">RevShare ${a.revshare}%</span>
+        ${a.cpa?`<span style="font-size:12px;color:var(--gold2);font-family:'Bebas Neue',sans-serif;letter-spacing:1px">CPA ${a.cpa}€</span>`:''}
+      </div>
+      <div style="font-size:11px;color:rgba(240,224,192,.25);background:rgba(0,0,0,.3);padding:6px 8px;border-radius:2px;margin-bottom:6px;word-break:break-all;font-family:monospace">${a.link}</div>
+      ${a.note?`<div style="font-size:11px;color:rgba(240,224,192,.35);margin-bottom:6px">📝 ${a.note}</div>`:''}
+      <div style="display:flex;gap:10px;font-size:11px;color:rgba(240,224,192,.3);margin-bottom:8px">
+        <span>👆 ${a.clicks} clics</span>
+        <span>✓ ${a.conversions} conv.</span>
+        <span>💰 ~${mrr.toFixed(2)}€/mois</span>
+        <span>📅 ${new Date(a.createdAt).toLocaleDateString('fr-FR')}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="copyAff('${a.link}')" style="flex:1;padding:7px;background:rgba(32,96,192,.1);color:var(--blue2);border:1px solid rgba(32,96,192,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">📋 COPIER LE LIEN</button>
+        <button onclick="deleteAff('${a.slug}')" style="padding:7px 12px;background:rgba(196,32,32,.08);color:var(--red2);border:1px solid rgba(196,32,32,.2);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border-radius:2px;cursor:pointer">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ TOAST ══
+function showToastAdmin(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a3020;border:1px solid rgba(80,255,144,.3);color:#50ff90;padding:8px 16px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;font-family:Bebas Neue,sans-serif;letter-spacing:1px';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// ══ EXPORT CSV ══
+function exportCSV(){
+  const header = 'Prénom,Nom,Email,Pack,Prix/mois,Date inscription\n';
+  const rows = users.map(u=>`${u.prenom},${u.nom},${u.email},${u.pack},${PACK_PRICES[u.pack]||0}€,${new Date(u.createdAt).toLocaleDateString('fr-FR')}`).join('\n');
+  const blob = new Blob([header+rows],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'wheelcaller-users-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
+// Auto-load if already logged in
+if(sessionStorage.getItem('wc_admin')) loadUsers();
+</script>
+</body>
+</html>
