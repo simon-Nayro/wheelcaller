@@ -101,7 +101,7 @@ body{background-image:
 #stratBlocks{background:rgba(0,0,0,.15);border-bottom:1px solid rgba(212,168,67,.06)}
 .sb{padding:9px 13px;border-bottom:1px solid rgba(212,168,67,.04)}
 .sb-hdr{display:flex;align-items:center;gap:9px;margin-bottom:9px;cursor:pointer}
-.sb-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,168,67,.38);flex:1}
+.sb-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#FFD700;flex:1;font-weight:700;text-shadow:0 0 10px rgba(255,215,0,.3)}
 .sb-title::after{content:'';display:block;height:1px;background:linear-gradient(90deg,rgba(212,168,67,.15),transparent);margin-top:3px}
 .sb-arrow{font-size:12px;color:rgba(212,168,67,.3);transition:transform .2s;flex-shrink:0}
 .sb-arrow.open{transform:rotate(90deg)}
@@ -529,6 +529,8 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
 .ad-dots{display:flex;gap:3px;align-items:center;flex-shrink:0}
 .ad-dot{width:4px;height:4px;border-radius:50%;background:rgba(212,168,67,.2);transition:background .3s}
 .ad-dot.on{background:rgba(212,168,67,.5)}
+
+.section-title{display:flex;align-items:center;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:#FFD700;font-weight:700;text-shadow:0 0 12px rgba(255,215,0,.35);padding:10px 14px 8px;margin:6px 0 2px;border-bottom:1px solid rgba(255,215,0,.25);background:rgba(0,0,0,.15);}
 </style>
 </head>
 <body>
@@ -825,6 +827,7 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   <div class="pm-row" onclick="openM('upgradeModal')">⭐ Passer Premium</div>
   <div class="pm-row" onclick="openM('affModal')">🎰 Casinos partenaires</div>
   <div class="pm-row" id="pmClubRow" style="display:none" onclick="openClub()">👑 WheelCaller Club</div>
+  <div class="pm-row" onclick="window.open('guide.html','_blank')">📖 Guide d'utilisation</div>
   <div class="pm-row" onclick="openAdminPanel()">⚙ Admin Panel</div>
   <div class="pm-row red" onclick="doLogout()">↩ Déconnexion</div>
 </div>
@@ -870,6 +873,125 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
 </div>
 </div>
 
+
+<div class="section-title">🎯 SIGNAL EN COURS</div>
+<!-- ══ SIGNAL ══ -->
+<div id="signal" class="ATTENTE">
+  <div class="si" id="si">⬡</div>
+  <div>
+    <div class="sw" id="sw">EN ATTENTE</div>
+    <div class="sy" id="sy">Ajoutez des tirages pour démarrer</div>
+  </div>
+  <div class="sr">
+    <div class="sp" id="sp">–</div>
+    <div class="ss" id="ss">–</div>
+    <div class="st" id="st">–</div>
+  </div>
+</div>
+
+
+<div class="section-title">📷 SAISIE DU TIRAGE</div>
+<!-- ══ CAMERA ══ -->
+<div id="camWrap">
+  <div class="cam-hdr">
+    <div class="cdot" id="cdot"></div>
+    <span class="clbl">Caméra · Lecture auto</span>
+    <span class="cst w" id="cst">⬤ EN ATTENTE</span>
+  </div>
+  <div id="camPh">
+    <div class="cam-ph-txt">
+      <div style="font-size:28px;margin-bottom:6px;opacity:.2">📷</div>
+      <div id="camPhTxt">Entre ta clé API Anthropic ci-dessous pour activer la caméra</div>
+      <div style="font-size:10px;margin-top:3px;opacity:.5">Pointe vers le panneau des résultats du casino</div>
+    </div>
+  </div>
+  <video id="camVideo" autoplay muted playsinline></video>
+  <div class="cam-ft">
+    <div><div class="cr">Dernier lu : <span id="camNum" style="color:var(--red2)">–</span></div>
+    <div class="cc">Confiance : <span id="camConf">–</span> · Prochaine lecture : <span id="camTmr" style="color:var(--gold2)">–</span>s</div></div>
+    <div style="margin-left:auto;font-size:10px;color:rgba(212,168,67,.28)"><span id="totCount">0</span> tirages</div>
+  </div>
+  <div class="apirow" id="apirow">
+    <input type="password" class="apii" id="apiInp" placeholder="sk-ant-api03-...">
+    <button class="apis" onclick="saveKey()">Activer</button>
+  </div>
+</div>
+
+<!-- ══ MANUAL INPUT ══ -->
+<div id="manInput">
+  <input type="number" class="mi" id="mi" placeholder="–" min="0" max="36" autocomplete="off">
+  <button class="mi-add" onclick="addNum()">+ AJOUTER</button>
+  <button class="mi-rand" onclick="addRand()">ALÉA</button>
+  <button class="mi-clr" onclick="clearAll()">✕</button>
+  <div class="draw-ctr"><strong id="drawCtr">0</strong>/60</div>
+</div>
+
+<!-- ══ PLAY ZONE ══ -->
+<div id="playZone">
+  <div class="pzhdr">
+    <div class="pzl">◆ Numéros à couvrir</div>
+    <div class="pzc" id="pzc">–</div>
+    <div class="pzcov" id="pzcov" style="color:rgba(212,168,67,.3)">–</div>
+  </div>
+  <div class="pnums" id="pnums"><span style="color:rgba(212,168,67,.25);font-size:13px;font-style:italic">En attente de tendance...</span></div>
+  <div class="exrow"><span class="exlbl">NE PAS JOUER :</span><div id="exnums"></div></div>
+</div>
+
+
+<div class="section-title">🤖 RECOMMANDATIONS ROBOT</div>
+<!-- ══ ADAPTIVE ROBOT PRECONISATIONS ══ -->
+<div id="precosPanel">
+  <div class="precos-lbl">🤖 Préconisations du robot</div>
+</div>
+
+<!-- ══ RECO BAR ══ -->
+<div id="recoBar">
+  <div class="reco-lbl">◆ Recommande</div>
+  <div class="reco-chip sig" id="recoSig">🎯 JOUER</div>
+  <div class="reco-arrow">→</div>
+  <div class="reco-chip st" id="recoSt">Numéros 80%</div>
+  <div class="reco-chip pr" id="recoPr">Flat</div>
+  <div class="reco-arrow">→</div>
+  <div class="reco-mise" id="recoMise">–</div>
+</div>
+
+<!-- ══ CPM DISPLAY BANNER — Adsterra (FREE only) ══ -->
+<div id="cpmBanner">
+  <div class="cpm-wrap">
+    <div class="cpm-label">PUBLICITÉS · Mode gratuit</div>
+    <div class="cpm-slots" id="cpmSlots"></div>
+    <div class="cpm-powered">Pub via Adsterra · CPM iGaming</div>
+  </div>
+</div>
+
+<!-- ══ AFFILIATION BANNER #1 — contextuel JOUER ══ -->
+<a class="aff-banner ctx" id="affBanner1" href="#" target="_blank" onclick="trackAff('banner1')">
+  <div class="aff-icon">🎰</div>
+  <div class="aff-txt">
+    <div class="aff-title" id="ab1-title">Jouez sur Revduck Casino</div>
+    <div class="aff-sub" id="ab1-sub">Jusqu'à 700€ de bonus de bienvenue</div>
+  </div>
+  <div class="aff-cta">Jouer →</div>
+</a>
+<div class="aff-small" id="affSmall1">Lien partenaire · 18+ · Jouez responsablement</div>
+
+
+<div class="section-title">💰 MISE CE TIRAGE</div>
+<!-- ══ MISE PANEL ══ -->
+<div id="misePanel">
+  <div>
+    <span class="mise-lbl">Mise / unité</span>
+    <input type="number" class="mise-inp" id="baseUnit" value="5" min="1" onchange="updateMise()">
+  </div>
+  <div class="mise-res">
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,168,67,.3)">MISEZ CE TIRAGE</div>
+    <div class="mise-res-v" id="miseVal">–</div>
+    <div class="mise-res-p" id="miseProg">–</div>
+  </div>
+</div>
+
+
+<div class="section-title">📊 STRATÉGIES</div>
 <!-- ══ STRATEGY BLOCKS ══ -->
 <div id="stratBlocks">
 
@@ -981,30 +1103,8 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
 
 </div>
 
-<!-- ══ RECO BAR ══ -->
-<div id="recoBar">
-  <div class="reco-lbl">◆ Recommande</div>
-  <div class="reco-chip sig" id="recoSig">🎯 JOUER</div>
-  <div class="reco-arrow">→</div>
-  <div class="reco-chip st" id="recoSt">Numéros 80%</div>
-  <div class="reco-chip pr" id="recoPr">Flat</div>
-  <div class="reco-arrow">→</div>
-  <div class="reco-mise" id="recoMise">–</div>
-</div>
 
-<!-- ══ MISE PANEL ══ -->
-<div id="misePanel">
-  <div>
-    <span class="mise-lbl">Mise / unité</span>
-    <input type="number" class="mise-inp" id="baseUnit" value="5" min="1" onchange="updateMise()">
-  </div>
-  <div class="mise-res">
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(212,168,67,.3)">MISEZ CE TIRAGE</div>
-    <div class="mise-res-v" id="miseVal">–</div>
-    <div class="mise-res-p" id="miseProg">–</div>
-  </div>
-</div>
-
+<div class="section-title">📖 GUIDE DES PHASES</div>
 <!-- ══ PHASE GUIDE ══ -->
 <div id="phaseGuide">
   <div class="pg-title">◆ Quelle stratégie selon la phase ?</div>
@@ -1014,94 +1114,13 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   <div class="pg-row"><div class="pgr-sig f" id="pg-fort">🔥 FORT</div><div class="pgr-chips" id="pg-fort-chips"><span class="pgr-chip" data-i18n="chip_jamesbond">James Bond</span><span class="pgr-chip" data-i18n="chip_numeros90">Numéros 90%</span><span class="pgr-chip">Paroli</span></div><div class="pgr-note" id="pg-note-3">→ Max</div></div>
 </div>
 
-<!-- ══ SIGNAL ══ -->
-<div id="signal" class="ATTENTE">
-  <div class="si" id="si">⬡</div>
-  <div>
-    <div class="sw" id="sw">EN ATTENTE</div>
-    <div class="sy" id="sy">Ajoutez des tirages pour démarrer</div>
-  </div>
-  <div class="sr">
-    <div class="sp" id="sp">–</div>
-    <div class="ss" id="ss">–</div>
-    <div class="st" id="st">–</div>
-  </div>
-</div>
 
-<!-- ══ ADAPTIVE ROBOT PRECONISATIONS ══ -->
-<div id="precosPanel">
-  <div class="precos-lbl">🤖 Préconisations du robot</div>
-</div>
-
-<!-- ══ CPM DISPLAY BANNER — Adsterra (FREE only) ══ -->
-<div id="cpmBanner">
-  <div class="cpm-wrap">
-    <div class="cpm-label">PUBLICITÉS · Mode gratuit</div>
-    <div class="cpm-slots" id="cpmSlots"></div>
-    <div class="cpm-powered">Pub via Adsterra · CPM iGaming</div>
-  </div>
-</div>
-
-<!-- ══ AFFILIATION BANNER #1 — contextuel JOUER ══ -->
-<a class="aff-banner ctx" id="affBanner1" href="#" target="_blank" onclick="trackAff('banner1')">
-  <div class="aff-icon">🎰</div>
-  <div class="aff-txt">
-    <div class="aff-title" id="ab1-title">Jouez sur Revduck Casino</div>
-    <div class="aff-sub" id="ab1-sub">Jusqu'à 700€ de bonus de bienvenue</div>
-  </div>
-  <div class="aff-cta">Jouer →</div>
-</a>
-<div class="aff-small" id="affSmall1">Lien partenaire · 18+ · Jouez responsablement</div>
-
-<!-- ══ PLAY ZONE ══ -->
-<div id="playZone">
-  <div class="pzhdr">
-    <div class="pzl">◆ Numéros à couvrir</div>
-    <div class="pzc" id="pzc">–</div>
-    <div class="pzcov" id="pzcov" style="color:rgba(212,168,67,.3)">–</div>
-  </div>
-  <div class="pnums" id="pnums"><span style="color:rgba(212,168,67,.25);font-size:13px;font-style:italic">En attente de tendance...</span></div>
-  <div class="exrow"><span class="exlbl">NE PAS JOUER :</span><div id="exnums"></div></div>
-</div>
-
-<!-- ══ CAMERA ══ -->
-<div id="camWrap">
-  <div class="cam-hdr">
-    <div class="cdot" id="cdot"></div>
-    <span class="clbl">Caméra · Lecture auto</span>
-    <span class="cst w" id="cst">⬤ EN ATTENTE</span>
-  </div>
-  <div id="camPh">
-    <div class="cam-ph-txt">
-      <div style="font-size:28px;margin-bottom:6px;opacity:.2">📷</div>
-      <div id="camPhTxt">Entre ta clé API Anthropic ci-dessous pour activer la caméra</div>
-      <div style="font-size:10px;margin-top:3px;opacity:.5">Pointe vers le panneau des résultats du casino</div>
-    </div>
-  </div>
-  <video id="camVideo" autoplay muted playsinline></video>
-  <div class="cam-ft">
-    <div><div class="cr">Dernier lu : <span id="camNum" style="color:var(--red2)">–</span></div>
-    <div class="cc">Confiance : <span id="camConf">–</span> · Prochaine lecture : <span id="camTmr" style="color:var(--gold2)">–</span>s</div></div>
-    <div style="margin-left:auto;font-size:10px;color:rgba(212,168,67,.28)"><span id="totCount">0</span> tirages</div>
-  </div>
-  <div class="apirow" id="apirow">
-    <input type="password" class="apii" id="apiInp" placeholder="sk-ant-api03-...">
-    <button class="apis" onclick="saveKey()">Activer</button>
-  </div>
-</div>
-
-<!-- ══ MANUAL INPUT ══ -->
-<div id="manInput">
-  <input type="number" class="mi" id="mi" placeholder="–" min="0" max="36" autocomplete="off">
-  <button class="mi-add" onclick="addNum()">+ AJOUTER</button>
-  <button class="mi-rand" onclick="addRand()">ALÉA</button>
-  <button class="mi-clr" onclick="clearAll()">✕</button>
-  <div class="draw-ctr"><strong id="drawCtr">0</strong>/60</div>
-</div>
-
+<div class="section-title">🕐 HISTORIQUE DES TIRAGES</div>
 <!-- ══ HISTORY ══ -->
 <div id="hist"><span style="color:rgba(212,168,67,.22);font-size:13px;font-style:italic">Aucun tirage</span></div>
 
+
+<div class="section-title">🔥 TENDANCES & ANALYSE</div>
 <!-- ══ TRENDS ══ -->
 <div id="trends">
   <div class="tc"><div class="tcl">Zone dominante</div><div class="tcv cd" id="tcz">–</div><div class="tcs" id="tczs">–</div></div>
@@ -1115,6 +1134,8 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   <div id="mg"></div>
 </div>
 
+
+<div class="section-title">📈 STATS & JOURNAL</div>
 <!-- ══ STATS (premium) ══ -->
 <div id="statsWrap">
   <div class="stl">Statistiques avancées <span class="ptag">PREMIUM</span></div>
@@ -3194,5 +3215,5 @@ analyze();
 </div>
 </div>
 
+
 </body>
-</html>
