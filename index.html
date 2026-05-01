@@ -629,8 +629,14 @@ function register(){
   localStorage.setItem('wc_user', JSON.stringify(user));
   localStorage.setItem('wc_pack', selectedPack);
 
-  // Redirect to app
-  window.location.href = 'app.html';
+  // Show email confirmation message then redirect
+  const btn = document.querySelector('#registerModal .btn-submit');
+  if(btn){
+    btn.textContent = '✓ COMPTE CRÉÉ · REDIRECTION...';
+    btn.style.background = 'linear-gradient(135deg,#0a3a1a,#1a9944,#0a3a1a)';
+  }
+  showToast('✓ Bienvenue '+prenom+' ! Redirection vers WheelCaller...');
+  setTimeout(()=>{ window.location.href = 'app.html'; }, 1500);
 }
 
 // ══ LOGIN ══
@@ -668,6 +674,15 @@ document.addEventListener('keydown', e => {
     if(document.getElementById('loginModal').classList.contains('show')) login();
   }
 });
+
+function showToast(msg){
+  let t=document.getElementById('lToast');
+  if(!t){t=document.createElement('div');t.id='lToast';
+    t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(26,58,42,.95);border:1px solid rgba(80,255,144,.3);color:#50ff90;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;font-family:Bebas Neue,sans-serif;letter-spacing:1px';
+    document.body.appendChild(t);}
+  t.textContent=msg; t.style.display='block';
+  setTimeout(()=>{t.style.display='none';},3000);
+}
 </script>
 </body>
 </html>

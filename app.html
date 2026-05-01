@@ -1723,23 +1723,72 @@ function closeM(id){document.getElementById(id).classList.remove('show')}
 function swM(a,b){closeM(a);openM(b)}
 
 // ══ AUTH ══
+// ══ AUTO-LOGIN FROM LANDING PAGE ══
+(function checkIncomingUser(){
+  try{
+    const stored = localStorage.getItem('wc_user');
+    if(stored){
+      const u = JSON.parse(stored);
+      if(u && u.email){
+        // Build user object from landing registration
+        user = {
+          name: u.prenom ? u.prenom + ' ' + u.nom : u.email.split('@')[0],
+          email: u.email,
+          prenom: u.prenom||'',
+          nom: u.nom||''
+        };
+        loggedIn = true;
+        const pack = u.pack || 'free';
+        currentPlan = pack;
+        isPrem = (pack !== 'free');
+        // Apply plan access after DOM is ready
+        document.addEventListener('DOMContentLoaded', ()=>{
+          renderUser();
+          applyPlanAccess(pack);
+          startNewSession();
+        });
+      }
+    }
+  }catch(e){}
+})();
+
 function doLogin(){
   const e=document.getElementById('li-email').value;
-  if(!e)return;
-  user={name:e.split('@')[0],email:e};
-  loggedIn=true; isPrem=false;
-  closeM('loginModal');
-  renderUser(); startNewSession();
-  // Login: no onboarding (they already have a casino)
+  const p=document.getElementById('li-pwd')?document.getElementById('li-pwd').value:'';
+  if(!e){showToast('Email requis'); return;}
+  // Check stored user
+  const stored = JSON.parse(localStorage.getItem('wc_user')||'null');
+  if(stored && stored.email === e){
+    user={name:(stored.prenom||'')+(stored.nom?' '+stored.nom:'') || e.split('@')[0], email:e, prenom:stored.prenom||'', nom:stored.nom||''};
+    const pack = stored.pack||'free';
+    currentPlan = pack; isPrem = (pack!=='free');
+    loggedIn=true;
+    closeM('loginModal');
+    renderUser(); applyPlanAccess(pack); startNewSession();
+  } else {
+    // New login: create session
+    user={name:e.split('@')[0],email:e};
+    loggedIn=true; isPrem=false; currentPlan='free';
+    localStorage.setItem('wc_user', JSON.stringify({email:e, prenom:e.split('@')[0], nom:'', pack:'free', createdAt:new Date().toISOString()}));
+    closeM('loginModal');
+    renderUser(); startNewSession();
+  }
 }
 function doRegister(){
-  const n=document.getElementById('rg-name').value,e=document.getElementById('rg-email').value;
-  if(!n||!e)return;
-  user={name:n,email:e};
-  loggedIn=true; isPrem=false;
+  const n=document.getElementById('rg-name').value;
+  const e=document.getElementById('rg-email').value;
+  const pw=document.getElementById('rg-pwd')?document.getElementById('rg-pwd').value:'';
+  if(!n||!e){showToast('Prénom et email requis'); return;}
+  if(pw && pw.length<6){showToast('Mot de passe trop court (6 car. min)'); return;}
+  const parts=n.trim().split(' ');
+  const prenom=parts[0]||n, nom=parts.slice(1).join(' ')||'';
+  user={name:n, email:e, prenom, nom};
+  loggedIn=true; isPrem=false; currentPlan='free';
+  // Persist user
+  localStorage.setItem('wc_user', JSON.stringify({prenom, nom, email:e, pack:'free', createdAt:new Date().toISOString()}));
   closeM('registerModal');
   renderUser(); startNewSession();
-  // EMPLACEMENT #1 — show casino onboarding after registration
+  // Show casino onboarding
   setTimeout(()=>openM('onboardingModal'),400);
 }
 function socialAuth(p){
@@ -1783,12 +1832,19 @@ function showToast(msg){
   setTimeout(()=>{t.style.display='none';},3000);
 }
 function doLogout(){
-  loggedIn=false; isPrem=false; user=null;
+  loggedIn=false; isPrem=false; user=null; currentPlan='free';
+  localStorage.removeItem('wc_user');
+  localStorage.removeItem('wc_pack');
   history=[]; freq={}; phaseLog=[]; sessionsUsed=0; drawsThisSess=0;
-  stopAds(); stopCPM(); clearInterval(affBannerInterval);
+  try{stopAds();}catch(e){}
+  try{stopCPM();}catch(e){}
+  try{clearInterval(affBannerInterval);}catch(e){}
   document.getElementById('pmenu').classList.remove('show');
   renderUser(); lockPrem();
-  renderHist(); analyze();
+  renderHist();
+  try{analyze();}catch(e){}
+  // Redirect to landing
+  setTimeout(()=>{ window.location.href='index.html'; }, 500);
 }
 
 
