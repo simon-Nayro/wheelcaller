@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>WheelCaller Club · VIP</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06100a;--bg2:#0a1810;--bg3:#0f1e14;--bg4:#162a1c;
+  --gold:#d4a843;--gold2:#f0cc70;--gold3:#8a6418;
+  --green:#50ff90;--orange:#ffaa40;--red:#ff5555;--blue:#60aaff;
+  --prem:#c090ff;--ivory:#f0e0b8;
+  --vip:#ff8060;--vip2:#ffb09a;
+  --chat-me:rgba(80,255,144,.12);--chat-other:rgba(0,0,0,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ivory);font-family:"Barlow Condensed",sans-serif;height:100%;overflow:hidden}
+
+/* ── GATE ── */
+#gate{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center}
+#gate.hidden{display:none}
+#gate svg{width:72px;height:72px;filter:drop-shadow(0 0 20px rgba(255,128,96,.4));margin-bottom:20px}
+.gate-title{font-family:"Bebas Neue",sans-serif;font-size:32px;letter-spacing:4px;color:var(--vip2);margin-bottom:6px}
+.gate-sub{font-size:13px;color:rgba(240,224,184,.45);margin-bottom:28px;line-height:1.6}
+.gate-inp{width:100%;max-width:320px;background:rgba(0,0,0,.4);border:1px solid rgba(255,128,96,.25);color:var(--ivory);padding:10px 14px;font-family:"Bebas Neue",sans-serif;font-size:16px;letter-spacing:2px;border-radius:3px;outline:none;text-align:center;margin-bottom:8px}
+.gate-inp:focus{border-color:var(--vip)}
+.gate-btn{width:100%;max-width:320px;padding:11px;background:linear-gradient(135deg,#8b3010,var(--vip),#8b3010);color:#fff;font-family:"Bebas Neue",sans-serif;font-size:15px;letter-spacing:3px;border:none;border-radius:3px;cursor:pointer}
+.gate-btn:hover{filter:brightness(1.1)}
+.gate-err{font-size:11px;color:var(--red);margin-top:6px;display:none}
+
+/* ── APP SHELL ── */
+#app{display:flex;flex-direction:column;height:100vh}
+#app.hidden{display:none}
+
+/* ── TOP BAR ── */
+#topBar{display:flex;align-items:center;padding:8px 13px;background:rgba(0,0,0,.5);border-bottom:1px solid rgba(255,128,96,.15);gap:10px;flex-shrink:0;position:relative;z-index:50}
+#topBar svg{width:26px;height:26px}
+.tb-name{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:3px;color:var(--gold2);flex:1}
+.tb-name small{font-size:9px;letter-spacing:2px;color:rgba(255,128,96,.5);display:block;font-family:"Barlow Condensed",sans-serif}
+.vip-badge{background:linear-gradient(135deg,#8b3010,var(--vip));color:#fff;font-family:"Bebas Neue",sans-serif;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:10px}
+
+/* ── NAV TABS ── */
+#navTabs{display:flex;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,128,96,.1);flex-shrink:0}
+.nt{flex:1;padding:9px 4px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(240,224,184,.35);display:flex;flex-direction:column;align-items:center;gap:2px}
+.nt:hover{color:rgba(240,224,184,.6)}
+.nt.on{color:var(--vip2);border-bottom-color:var(--vip)}
+.nt-ico{font-size:16px}
+.nt-lbl{font-size:8px;letter-spacing:1px}
+
+/* ── PAGES ── */
+#pages{flex:1;overflow:hidden;position:relative}
+.page{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page.on{display:block}
+
+/* ══════════════════════════════
+   PAGE 1 — DASHBOARD
+══════════════════════════════ */
+.dash-hero{padding:18px 13px;background:linear-gradient(135deg,rgba(22,42,28,.9),rgba(6,16,10,.9));border-bottom:1px solid rgba(255,128,96,.12);position:relative;overflow:hidden}
+.dash-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,128,96,.06) 0%,transparent 70%)}
+.dash-welcome{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,128,96,.5);margin-bottom:4px}
+.dash-name{font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:3px;color:var(--gold2);line-height:1}
+.dash-vip-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.dash-vip-ico{font-size:16px}
+.dash-vip-txt{font-size:11px;color:rgba(255,128,96,.6);letter-spacing:1px}
+
+/* Stats row */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 13px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,128,96,.06)}
+.dstat{background:rgba(0,0,0,.3);border:1px solid rgba(255,128,96,.12);border-radius:3px;padding:8px 6px;text-align:center}
+.dstat-v{font-family:"Bebas Neue",sans-serif;font-size:20px;color:var(--vip2);line-height:1}
+.dstat-l{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,128,96,.4);margin-top:2px}
+
+/* Quick actions */
+.dash-sec{padding:12px 13px;border-bottom:1px solid rgba(255,128,96,.06)}
+.dash-sec-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,128,96,.35);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.dash-sec-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,128,96,.15),transparent)}
+
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qa{padding:12px 11px;background:rgba(0,0,0,.3);border:1px solid rgba(255,128,96,.12);border-radius:4px;cursor:pointer;transition:all .18s;text-align:center}
+.qa:hover{border-color:var(--vip);background:rgba(255,128,96,.06)}
+.qa-ico{font-size:24px;margin-bottom:6px}
+.qa-name{font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:1px;color:var(--vip2)}
+.qa-sub{font-size:10px;color:rgba(240,224,184,.4);margin-top:2px;line-height:1.4}
+
+/* Next coaching */
+.coaching-next{margin:12px 13px;padding:12px;background:rgba(255,128,96,.06);border:1px solid rgba(255,128,96,.2);border-radius:4px;display:flex;align-items:center;gap:12px}
+.cn-ico{font-size:28px;flex-shrink:0}
+.cn-info{flex:1}
+.cn-title{font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:2px;color:var(--vip2)}
+.cn-date{font-size:11px;color:rgba(255,128,96,.6);margin-top:2px}
+.cn-btn{padding:6px 12px;background:linear-gradient(135deg,#8b3010,var(--vip));color:#fff;font-family:"Bebas Neue",sans-serif;font-size:11px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer;white-space:nowrap}
+
+/* Badges */
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;padding:0 13px 14px}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+.badge-ico{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid transparent}
+.badge-ico.earned{background:rgba(255,128,96,.12);border-color:var(--vip)}
+.badge-ico.locked{background:rgba(0,0,0,.3);border-color:rgba(255,128,96,.12);opacity:.35;filter:grayscale(1)}
+.badge-lbl{font-size:8px;letter-spacing:1px;color:rgba(255,128,96,.5);text-align:center;max-width:42px;line-height:1.3}
+
+/* ══════════════════════════════
+   PAGE 2 — COACHING
+══════════════════════════════ */
+.coaching-hero{padding:16px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,128,96,.1);display:flex;align-items:center;gap:12px}
+.coach-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#8b3010,var(--vip));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:2px solid var(--vip)}
+.coach-info{}
+.coach-name{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:2px;color:var(--vip2)}
+.coach-title{font-size:11px;color:rgba(255,128,96,.5);margin-top:2px}
+.coach-stats{display:flex;gap:10px;margin-top:5px}
+.coach-stat{font-size:10px;color:rgba(240,224,184,.45)}
+.coach-stat strong{color:var(--gold2)}
+
+.cal-month{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:rgba(0,0,0,.2)}
+.cal-title{font-family:"Bebas Neue",sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold2)}
+.cal-nav{background:none;border:1px solid rgba(255,128,96,.2);color:var(--vip2);font-size:14px;padding:3px 9px;border-radius:2px;cursor:pointer}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:6px 13px}
+.cal-day-hdr{text-align:center;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,128,96,.3);padding:4px 0}
+.cal-day{text-align:center;padding:7px 3px;border-radius:3px;font-size:12px;color:rgba(240,224,184,.4);cursor:default;position:relative}
+.cal-day.cur{color:var(--ivory)}
+.cal-day.has-slot{color:var(--green);cursor:pointer;background:rgba(80,255,144,.06);border:1px solid rgba(80,255,144,.15)}
+.cal-day.has-slot:hover{background:rgba(80,255,144,.12)}
+.cal-day.booked{color:var(--vip2);background:rgba(255,128,96,.08);border:1px solid rgba(255,128,96,.2)}
+.cal-day.today{font-weight:700;color:var(--gold2)}
+
+.slot-list{padding:10px 13px}
+.slot-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,128,96,.35);margin-bottom:8px}
+.slot{display:flex;align-items:center;gap:10px;padding:10px 11px;background:rgba(0,0,0,.28);border:1px solid rgba(80,255,144,.15);border-radius:3px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.slot:hover{border-color:var(--green);background:rgba(80,255,144,.05)}
+.slot.full{border-color:rgba(255,128,96,.15);opacity:.55;cursor:not-allowed}
+.slot.my-booking{border-color:var(--vip);background:rgba(255,128,96,.06)}
+.slot-time{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:2px;color:var(--green);flex-shrink:0;min-width:60px}
+.slot.full .slot-time{color:var(--red)}
+.slot.my-booking .slot-time{color:var(--vip2)}
+.slot-info{flex:1}
+.slot-type{font-family:"Bebas Neue",sans-serif;font-size:13px;letter-spacing:1px;color:var(--gold2)}
+.slot-desc{font-size:10px;color:rgba(240,224,184,.45);margin-top:1px}
+.slot-spots{font-size:10px;color:rgba(80,255,144,.6);flex-shrink:0}
+.slot.full .slot-spots{color:var(--red)}
+.slot-book-btn{padding:5px 10px;background:linear-gradient(135deg,#8b3010,var(--vip));color:#fff;font-family:"Bebas Neue",sans-serif;font-size:10px;letter-spacing:1px;border:none;border-radius:2px;cursor:pointer;white-space:nowrap}
+
+/* ══════════════════════════════
+   PAGE 3 — VIDÉOS
+══════════════════════════════ */
+.vid-filter{display:flex;gap:6px;padding:10px 13px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,128,96,.06)}
+.vid-filter::-webkit-scrollbar{display:none}
+.vf{padding:5px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(255,128,96,.12);border-radius:10px;font-size:11px;letter-spacing:1px;color:rgba(255,128,96,.5);cursor:pointer;white-space:nowrap;transition:all .15s}
+.vf.on{background:rgba(255,128,96,.1);border-color:var(--vip);color:var(--vip2)}
+
+.vid-grid{display:flex;flex-direction:column;gap:0}
+.vid-card{display:flex;align-items:center;gap:11px;padding:11px 13px;border-bottom:1px solid rgba(255,128,96,.05);cursor:pointer;transition:background .15s}
+.vid-card:hover{background:rgba(255,128,96,.03)}
+.vid-thumb{width:72px;height:48px;border-radius:3px;background:var(--bg3);border:1px solid rgba(255,128,96,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden}
+.vid-thumb-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(22,42,28,.8),rgba(6,16,10,.9))}
+.vid-play{position:relative;z-index:1;width:24px;height:24px;background:rgba(255,128,96,.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;padding-left:2px}
+.vid-dur{position:absolute;bottom:3px;right:3px;font-size:8px;letter-spacing:1px;background:rgba(0,0,0,.7);color:var(--ivory);padding:1px 4px;border-radius:2px;z-index:1}
+.vid-info{flex:1;min-width:0}
+.vid-title{font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:1px;color:var(--gold2);line-height:1.2;margin-bottom:3px}
+.vid-meta{font-size:10px;color:rgba(240,224,184,.4)}
+.vid-tag{display:inline-block;font-size:8px;letter-spacing:1px;padding:1px 6px;border-radius:6px;margin-top:3px}
+.vid-tag.strat{background:rgba(80,255,144,.08);color:var(--green);border:1px solid rgba(80,255,144,.15)}
+.vid-tag.coach{background:rgba(255,128,96,.08);color:var(--vip2);border:1px solid rgba(255,128,96,.15)}
+.vid-tag.avancé{background:rgba(192,144,255,.08);color:var(--prem);border:1px solid rgba(192,144,255,.15)}
+.vid-new{font-size:8px;background:var(--vip);color:#fff;padding:1px 6px;border-radius:6px;margin-left:5px;font-family:"Bebas Neue",sans-serif;letter-spacing:1px}
+
+/* Video player overlay */
+#vidPlayer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;flex-direction:column}
+#vidPlayer.show{display:flex}
+.vp-bar{padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,128,96,.1)}
+.vp-title{font-family:"Bebas Neue",sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold2);flex:1}
+.vp-close{background:none;border:1px solid rgba(255,128,96,.2);color:var(--vip2);font-size:14px;padding:3px 9px;border-radius:2px;cursor:pointer}
+.vp-screen{flex:1;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);position:relative}
+.vp-fake{text-align:center}
+.vp-fake-ico{font-size:60px;margin-bottom:12px;opacity:.4}
+.vp-fake-txt{font-size:13px;color:rgba(240,224,184,.4);line-height:1.6}
+.vp-fake-note{font-size:11px;color:rgba(255,128,96,.4);margin-top:8px}
+.vp-info{padding:12px 14px;border-top:1px solid rgba(255,128,96,.08)}
+.vp-desc{font-size:12px;color:rgba(240,224,184,.5);line-height:1.6}
+
+/* ══════════════════════════════
+   PAGE 4 — CHAT
+══════════════════════════════ */
+#chatPage{display:none;position:absolute;inset:0;flex-direction:column}
+#chatPage.on{display:flex}
+.chat-rooms{display:flex;gap:6px;padding:8px 13px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,128,96,.06);flex-shrink:0}
+.chat-rooms::-webkit-scrollbar{display:none}
+.cr-btn{padding:4px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(255,128,96,.12);border-radius:10px;font-size:10px;letter-spacing:1px;color:rgba(255,128,96,.45);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.cr-btn.on{background:rgba(255,128,96,.1);border-color:var(--vip);color:var(--vip2)}
+.cr-btn .cr-badge{display:inline-block;background:var(--vip);color:#fff;font-size:8px;padding:0 4px;border-radius:6px;margin-left:3px}
+
+.chat-msgs{flex:1;overflow-y:auto;padding:10px 13px;display:flex;flex-direction:column;gap:8px}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg.me{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--bg4),var(--bg3));border:1px solid rgba(255,128,96,.2);display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:12px;color:var(--vip2);flex-shrink:0}
+.msg-av.vip-av{background:linear-gradient(135deg,#8b3010,var(--vip))}
+.msg-bubble{max-width:75%;padding:8px 11px;border-radius:12px;font-size:13px;line-height:1.5}
+.msg.me .msg-bubble{background:var(--chat-me);border:1px solid rgba(80,255,144,.15);color:rgba(240,224,184,.85);border-radius:12px 12px 2px 12px}
+.msg.other .msg-bubble{background:var(--chat-other);border:1px solid rgba(255,128,96,.08);color:rgba(240,224,184,.7);border-radius:12px 12px 12px 2px}
+.msg-name{font-size:9px;letter-spacing:1px;color:rgba(255,128,96,.4);margin-bottom:2px}
+.msg-time{font-size:8px;color:rgba(240,224,184,.2);margin-top:3px;text-align:right}
+.msg-tag{display:inline-block;font-size:8px;background:rgba(255,128,96,.1);color:var(--vip2);border:1px solid rgba(255,128,96,.2);padding:1px 5px;border-radius:4px;margin-bottom:3px}
+
+/* System message */
+.msg-sys{text-align:center;font-size:10px;color:rgba(255,128,96,.3);letter-spacing:1px;padding:4px 0}
+
+.chat-input-wrap{padding:8px 13px;background:rgba(0,0,0,.4);border-top:1px solid rgba(255,128,96,.1);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.chat-inp{flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,128,96,.18);color:var(--ivory);padding:8px 12px;border-radius:20px;font-family:"Barlow Condensed",sans-serif;font-size:14px;outline:none}
+.chat-inp:focus{border-color:var(--vip)}
+.chat-inp::placeholder{color:rgba(240,224,184,.25)}
+.chat-send{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8b3010,var(--vip));border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-send:hover{filter:brightness(1.1)}
+
+/* Typing indicator */
+.typing{display:flex;gap:3px;align-items:center;padding:6px 11px;background:var(--chat-other);border:1px solid rgba(255,128,96,.08);border-radius:12px;max-width:60px}
+.typing span{width:5px;height:5px;border-radius:50%;background:rgba(240,224,184,.3);animation:typ .8s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes typ{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* ══════════════════════════════
+   PAGE 5 — PROFIL / LEADERBOARD
+══════════════════════════════ */
+.profile-hero{padding:18px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,128,96,.1);display:flex;gap:14px;align-items:center}
+.profile-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8b3010,var(--vip));display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:24px;color:#fff;flex-shrink:0;border:3px solid var(--vip);box-shadow:0 0 16px rgba(255,128,96,.3)}
+.profile-info{}
+.profile-name{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold2)}
+.profile-title{font-size:11px;color:rgba(255,128,96,.5);margin-top:2px}
+.profile-since{font-size:10px;color:rgba(240,224,184,.3);margin-top:4px}
+.profile-badges-row{display:flex;gap:5px;margin-top:6px}
+.pb{width:22px;height:22px;border-radius:50%;background:rgba(255,128,96,.1);border:1px solid rgba(255,128,96,.2);display:flex;align-items:center;justify-content:center;font-size:12px}
+
+.profile-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,128,96,.06);border-top:1px solid rgba(255,128,96,.08);border-bottom:1px solid rgba(255,128,96,.08)}
+.psg{padding:12px;text-align:center;background:var(--bg)}
+.psg-v{font-family:"Bebas Neue",sans-serif;font-size:24px;color:var(--gold2)}
+.psg-l{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,128,96,.35);margin-top:2px}
+
+/* Leaderboard */
+.lb-tabs{display:flex;gap:1px;background:rgba(255,128,96,.06);border-bottom:1px solid rgba(255,128,96,.08)}
+.lb-tab{flex:1;padding:8px;text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,128,96,.35);cursor:pointer;transition:all .15s;border-bottom:2px solid transparent}
+.lb-tab.on{color:var(--vip2);border-bottom-color:var(--vip);background:rgba(255,128,96,.04)}
+
+.lb-list{padding:0 13px}
+.lb-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,128,96,.05)}
+.lb-rank{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:1px;min-width:28px;text-align:center}
+.lb-rank.gold{color:#ffd700} .lb-rank.silver{color:#c0c0c0} .lb-rank.bronze{color:#cd7f32}
+.lb-rank.other{color:rgba(240,224,184,.3)}
+.lb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--bg4),var(--bg3));border:1px solid rgba(255,128,96,.15);display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:13px;color:var(--vip2);flex-shrink:0}
+.lb-av.me{border-color:var(--vip);background:linear-gradient(135deg,#8b3010,var(--vip))}
+.lb-info{flex:1}
+.lb-name{font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:1px;color:var(--ivory)}
+.lb-meta{font-size:10px;color:rgba(240,224,184,.4)}
+.lb-score{font-family:"Bebas Neue",sans-serif;font-size:16px;color:var(--gold2);letter-spacing:1px}
+.lb-item.me-row{background:rgba(255,128,96,.04);border-radius:3px;padding:10px 8px;border-color:rgba(255,128,96,.15)}
+
+/* Toast */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(255,128,96,.15);border:1px solid rgba(255,128,96,.3);color:var(--vip2);font-family:"Bebas Neue",sans-serif;font-size:13px;letter-spacing:2px;padding:8px 18px;border-radius:3px;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ══ GATE ══ -->
+<div id="gate">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="gg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#2a1008"/><stop offset="100%" stop-color="#0a0600"/></radialGradient><linearGradient id="gg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffb09a"/><stop offset="100%" stop-color="#8b3010"/></linearGradient></defs>
+    <circle cx="100" cy="100" r="95" fill="url(#gg)" stroke="url(#gg2)" stroke-width="3"/>
+    <g transform="translate(100,100)"><path d="M0,0 L0,-85 A85,85 0 0,1 26,-81 Z" fill="#5a1010"/><path d="M0,0 L51,-68 A85,85 0 0,1 72,-45 Z" fill="#5a1010"/><path d="M0,0 L81,-21 A85,85 0 0,1 82,17 Z" fill="#5a1010"/><path d="M0,0 L26,-81 A85,85 0 0,1 51,-68 Z" fill="#1a0a0a"/><path d="M0,0 L72,-45 A85,85 0 0,1 81,-21 Z" fill="#1a0a0a"/><path d="M0,0 L73,-43 A85,85 0 0,1 85,0 Z" fill="#1a2010"/></g>
+    <circle cx="100" cy="100" r="60" fill="none" stroke="url(#gg2)" stroke-width="2"/>
+    <circle cx="100" cy="100" r="38" fill="#0a0600" stroke="url(#gg2)" stroke-width="2"/>
+    <polygon points="90,87 90,113 116,100" fill="#ff8060" opacity="0.9"/>
+    <rect x="120" y="89" width="5" height="22" rx="2" fill="#ff8060" opacity="0.5"/>
+    <rect x="128" y="89" width="5" height="22" rx="2" fill="#ff8060" opacity="0.5"/>
+    <circle cx="100" cy="100" r="4" fill="#ffb09a"/>
+    <g fill="#ff8060" opacity="0.7"><circle cx="100" cy="8" r="2.5"/><circle cx="135" cy="17" r="2.5"/><circle cx="163" cy="39" r="2.5"/><circle cx="178" cy="72" r="2.5"/><circle cx="174" cy="132" r="2.5"/><circle cx="155" cy="165" r="2.5"/></g>
+  </svg>
+  <div class="gate-title">WHEELCALLER CLUB</div>
+  <div class="gate-sub">Espace privé réservé aux membres VIP<br>Entrez vos identifiants pour accéder</div>
+  <input type="email" class="gate-inp" id="gEmail" placeholder="EMAIL@EXEMPLE.COM">
+  <input type="password" class="gate-inp" id="gPwd" placeholder="MOT DE PASSE" style="margin-top:8px">
+  <button class="gate-btn" onclick="gateLogin()">👑 ACCÉDER AU CLUB VIP</button>
+  <div class="gate-err" id="gErr">Accès réservé aux membres VIP · Abonnement 49.99€/mois</div>
+  <div style="margin-top:14px;font-size:10px;color:rgba(255,128,96,.25);letter-spacing:1px">DEMO : tapez n'importe quel email + mot de passe</div>
+</div>
+
+<!-- ══ VIDEO PLAYER OVERLAY ══ -->
+<div id="vidPlayer">
+  <div class="vp-bar">
+    <div class="vp-title" id="vpTitle">–</div>
+    <button class="vp-close" onclick="closeVid()">✕ FERMER</button>
+  </div>
+  <div class="vp-screen">
+    <div class="vp-fake">
+      <div class="vp-fake-ico">🎬</div>
+      <div class="vp-fake-txt">Lecteur vidéo — Intégration Vimeo/YouTube<br>disponible après déploiement</div>
+      <div class="vp-fake-note">En production : vidéos hébergées sur Vimeo Pro (privé)</div>
+    </div>
+  </div>
+  <div class="vp-info"><div class="vp-desc" id="vpDesc">–</div></div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app" class="hidden">
+
+  <!-- TOP BAR -->
+  <div id="topBar">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs><radialGradient id="tg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#2a1008"/><stop offset="100%" stop-color="#0a0600"/></radialGradient><linearGradient id="tg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffb09a"/><stop offset="100%" stop-color="#8b3010"/></linearGradient></defs>
+      <circle cx="100" cy="100" r="95" fill="url(#tg)" stroke="url(#tg2)" stroke-width="3"/>
+      <g transform="translate(100,100)"><path d="M0,0 L0,-85 A85,85 0 0,1 26,-81 Z" fill="#5a1010"/><path d="M0,0 L51,-68 A85,85 0 0,1 72,-45 Z" fill="#5a1010"/><path d="M0,0 L26,-81 A85,85 0 0,1 51,-68 Z" fill="#1a0a0a"/><path d="M0,0 L73,-43 A85,85 0 0,1 85,0 Z" fill="#1a2010"/></g>
+      <circle cx="100" cy="100" r="38" fill="#0a0600" stroke="url(#tg2)" stroke-width="2"/>
+      <polygon points="90,87 90,113 116,100" fill="#ff8060" opacity="0.9"/>
+      <rect x="120" y="89" width="5" height="22" rx="2" fill="#ff8060" opacity="0.5"/>
+      <rect x="128" y="89" width="5" height="22" rx="2" fill="#ff8060" opacity="0.5"/>
+      <circle cx="100" cy="100" r="4" fill="#ffb09a"/>
+    </svg>
+    <div class="tb-name">WheelCaller Club<small>ESPACE VIP PRIVÉ</small></div>
+    <span class="vip-badge">👑 VIP</span>
+  </div>
+
+  <!-- NAV TABS -->
+  <div id="navTabs">
+    <div class="nt on" onclick="showPage('dash')"><div class="nt-ico">🏠</div><div class="nt-lbl">Accueil</div></div>
+    <div class="nt" onclick="showPage('coaching')"><div class="nt-ico">🎓</div><div class="nt-lbl">Coaching</div></div>
+    <div class="nt" onclick="showPage('videos')"><div class="nt-ico">🎬</div><div class="nt-lbl">Vidéos</div></div>
+    <div class="nt" onclick="showPage('chat')"><div class="nt-ico">💬</div><div class="nt-lbl">Club Chat<span id="chatDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--vip);margin-left:3px;vertical-align:middle"></span></div></div>
+    <div class="nt" onclick="showPage('profil')"><div class="nt-ico">👤</div><div class="nt-lbl">Profil</div></div>
+  </div>
+
+  <!-- PAGES -->
+  <div id="pages">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page on" id="page-dash">
+      <div class="dash-hero">
+        <div class="dash-welcome">Bienvenue dans votre espace</div>
+        <div class="dash-name" id="dashName">JOUEUR VIP</div>
+        <div class="dash-vip-row">
+          <div class="dash-vip-ico">👑</div>
+          <div class="dash-vip-txt">Membre VIP · Accès complet · Depuis Mai 2025</div>
+        </div>
+      </div>
+
+      <div class="dash-stats">
+        <div class="dstat"><div class="dstat-v">47</div><div class="dstat-l">Sessions</div></div>
+        <div class="dstat"><div class="dstat-v">3</div><div class="dstat-l">Coachings</div></div>
+        <div class="dstat"><div class="dstat-v">12</div><div class="dstat-l">Vidéos vues</div></div>
+        <div class="dstat"><div class="dstat-v">#4</div><div class="dstat-l">Classement</div></div>
+      </div>
+
+      <!-- Next coaching -->
+      <div class="coaching-next" onclick="showPage('coaching')">
+        <div class="cn-ico">🗓️</div>
+        <div class="cn-info">
+          <div class="cn-title">PROCHAIN COACHING</div>
+          <div class="cn-date">Vendredi 25 Avril · 20h00 · Session individuelle</div>
+        </div>
+        <button class="cn-btn">Voir →</button>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="dash-sec">
+        <div class="dash-sec-title">◆ Accès rapide</div>
+        <div class="qa-grid">
+          <div class="qa" onclick="showPage('coaching')">
+            <div class="qa-ico">🎓</div>
+            <div class="qa-name">Réserver</div>
+            <div class="qa-sub">Session coaching individuelle</div>
+          </div>
+          <div class="qa" onclick="showPage('videos')">
+            <div class="qa-ico">▶️</div>
+            <div class="qa-name">Vidéos</div>
+            <div class="qa-sub">12 modules disponibles</div>
+          </div>
+          <div class="qa" onclick="showPage('chat')">
+            <div class="qa-ico">💬</div>
+            <div class="qa-name">Club Chat</div>
+            <div class="qa-sub">8 membres en ligne</div>
+          </div>
+          <div class="qa" onclick="showPage('profil')">
+            <div class="qa-ico">🏆</div>
+            <div class="qa-name">Leaderboard</div>
+            <div class="qa-sub">Votre classement #4</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="dash-sec">
+        <div class="dash-sec-title">◆ Vos badges</div>
+        <div class="badge-row">
+          <div class="badge-item"><div class="badge-ico earned">👑</div><div class="badge-lbl">VIP Member</div></div>
+          <div class="badge-item"><div class="badge-ico earned">🎯</div><div class="badge-lbl">50 Sessions</div></div>
+          <div class="badge-item"><div class="badge-ico earned">🔥</div><div class="badge-lbl">Série 10+</div></div>
+          <div class="badge-item"><div class="badge-ico earned">🎓</div><div class="badge-lbl">Coaché</div></div>
+          <div class="badge-item"><div class="badge-ico locked">💎</div><div class="badge-lbl">100 Sessions</div></div>
+          <div class="badge-item"><div class="badge-ico locked">🏆</div><div class="badge-lbl">Top 3</div></div>
+          <div class="badge-item"><div class="badge-ico locked">⚡</div><div class="badge-lbl">Ambassadeur</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COACHING ── -->
+    <div class="page" id="page-coaching">
+      <div class="coaching-hero">
+        <div class="coach-avatar">🧑‍💼</div>
+        <div class="coach-info">
+          <div class="coach-name">ALEX MARTIN</div>
+          <div class="coach-title">Expert Stratégie Evolution Gaming · 8 ans</div>
+          <div class="coach-stats">
+            <div class="coach-stat">⭐ <strong>4.9</strong>/5</div>
+            <div class="coach-stat">🎓 <strong>320</strong> sessions</div>
+            <div class="coach-stat">👥 <strong>48</strong> VIP coachés</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cal-month">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-title" id="calTitle">AVRIL 2025</div>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="slot-list">
+        <div class="slot-title" id="slotTitle">◆ Créneaux disponibles — Avril</div>
+        <div id="slotList"></div>
+      </div>
+    </div>
+
+    <!-- ── VIDÉOS ── -->
+    <div class="page" id="page-videos">
+      <div class="vid-filter">
+        <div class="vf on" onclick="filterVid('tous',this)">Tous</div>
+        <div class="vf" onclick="filterVid('stratégie',this)">Stratégies</div>
+        <div class="vf" onclick="filterVid('coaching',this)">Coaching</div>
+        <div class="vf" onclick="filterVid('avancé',this)">Avancé</div>
+        <div class="vf" onclick="filterVid('débutant',this)">Débutant</div>
+      </div>
+      <div class="vid-grid" id="vidGrid"></div>
+    </div>
+
+    <!-- ── CHAT ── -->
+    <div class="page" id="page-chat">
+      <div id="chatPage" class="on">
+        <div class="chat-rooms">
+          <div class="cr-btn on" onclick="switchRoom('general',this)">🌍 Général <span class="cr-badge">3</span></div>
+          <div class="cr-btn" onclick="switchRoom('strategie',this)">🎯 Stratégie</div>
+          <div class="cr-btn" onclick="switchRoom('coaching',this)">🎓 Coaching</div>
+          <div class="cr-btn" onclick="switchRoom('wins',this)">🏆 Wins du jour</div>
+          <div class="cr-btn" onclick="switchRoom('vip',this)">👑 VIP Only</div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-input-wrap">
+          <input type="text" class="chat-inp" id="chatInp" placeholder="Votre message..." onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="chat-send" onclick="sendMsg()">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFIL / LEADERBOARD ── -->
+    <div class="page" id="page-profil">
+      <div class="profile-hero">
+        <div class="profile-av" id="profAv">V</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profName">JOUEUR VIP</div>
+          <div class="profile-title">👑 Membre VIP · Stratège confirmé</div>
+          <div class="profile-since">Membre depuis Mai 2025</div>
+          <div class="profile-badges-row">
+            <div class="pb">👑</div><div class="pb">🎯</div><div class="pb">🔥</div><div class="pb">🎓</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats-grid">
+        <div class="psg"><div class="psg-v">47</div><div class="psg-l">Sessions</div></div>
+        <div class="psg"><div class="psg-v">78%</div><div class="psg-l">Taux JOUER</div></div>
+        <div class="psg"><div class="psg-v">3</div><div class="psg-l">Coachings</div></div>
+        <div class="psg"><div class="psg-v">12</div><div class="psg-l">Vidéos</div></div>
+        <div class="psg"><div class="psg-v">4</div><div class="psg-l">Série max</div></div>
+        <div class="psg"><div class="psg-v">#4</div><div class="psg-l">Classement</div></div>
+      </div>
+
+      <div class="lb-tabs">
+        <div class="lb-tab on" onclick="switchLb('sessions',this)">Sessions</div>
+        <div class="lb-tab" onclick="switchLb('taux',this)">Taux signal</div>
+        <div class="lb-tab" onclick="switchLb('coachings',this)">Coachings</div>
+      </div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
+
+  </div><!-- /pages -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ══ STATE ══
+let currentUser = {name:'Joueur VIP', email:'', initial:'V'};
+let currentRoom = 'general';
+let calOffset = 0;
+let bookedSlots = new Set();
+let vidFilter = 'tous';
+let lbMode = 'sessions';
+
+// ══ GATE ══
+function gateLogin(){
+  const e = document.getElementById('gEmail').value.trim();
+  const p = document.getElementById('gPwd').value.trim();
+  if(!e || !p){ document.getElementById('gErr').style.display='block'; return; }
+  const name = e.split('@')[0].replace(/[^a-zA-Z0-9]/g,' ').trim().toUpperCase() || 'VIP';
+  currentUser = { name, email:e, initial:name[0].toUpperCase() };
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('dashName').textContent = name;
+  document.getElementById('profName').textContent = name;
+  document.getElementById('profAv').textContent = name[0].toUpperCase();
+  initAll();
+}
+
+// ══ NAVIGATION ══
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  const tabs = ['dash','coaching','videos','chat','profil'];
+  const idx = tabs.indexOf(id);
+  document.querySelectorAll('.nt')[idx].classList.add('on');
+  if(id==='chat'){ document.getElementById('chatDot').style.display='none'; scrollChat(); }
+  if(id==='coaching') renderCal();
+  if(id==='profil') renderLb(lbMode);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ══ COACHING / CALENDAR ══
+const MONTHS_FR = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
+const DAYS_FR = ['L','M','M','J','V','S','D'];
+
+const SLOTS_DATA = {
+  // day -> slots
+  21: [{time:'19h00',type:'Stratégie James Bond',desc:'Maîtriser la couverture 3 mises · 25 numéros',spots:1,max:1}],
+  23: [{time:'20h00',type:'Session individuelle',desc:'Coaching personnalisé · Analyse de votre jeu',spots:1,max:1},{time:'21h30',type:'Q&A Groupe VIP',desc:'Session questions/réponses · 4 membres max',spots:2,max:4}],
+  25: [{time:'20h00',type:'Session individuelle',desc:'Coaching personnalisé · Analyse de votre jeu',spots:1,max:1}],
+  28: [{time:'18h30',type:'Atelier D\'Alembert',desc:'Maîtriser la progression de mise',spots:3,max:4}],
+  30: [{time:'20h00',type:'Session individuelle',desc:'Coaching personnalisé · Analyse de votre jeu',spots:1,max:1}],
+};
+
+function changeMonth(d){ calOffset+=d; renderCal(); }
+
+function renderCal(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + calOffset;
+  const date = new Date(y, m, 1);
+  const mon = date.getMonth();
+  const yr = date.getFullYear();
+  document.getElementById('calTitle').textContent = MONTHS_FR[mon]+' '+yr;
+
+  const firstDay = new Date(yr,mon,1).getDay();
+  const daysInMonth = new Date(yr,mon+1,0).getDate();
+  const offset = firstDay===0?6:firstDay-1;
+
+  let html = DAYS_FR.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
+  for(let i=0;i<offset;i++) html+=`<div class="cal-day"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = d===now.getDate()&&mon===now.getMonth()&&yr===now.getFullYear();
+    const hasSlot = SLOTS_DATA[d] && calOffset===0;
+    const isBooked = bookedSlots.has(d);
+    let cls='cal-day';
+    if(isToday) cls+=' today';
+    if(hasSlot && !isBooked) cls+=' has-slot';
+    if(isBooked) cls+=' booked';
+    const onclick = (hasSlot||isBooked)?`onclick="selectDay(${d})"`:'';
+    html+=`<div class="${cls}" ${onclick}>${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+  renderSlots(null);
+}
+
+function selectDay(d){
+  const slots = SLOTS_DATA[d];
+  if(!slots) return;
+  renderSlots(d);
+  document.getElementById('slotTitle').textContent = `◆ Créneaux du ${d} — sélectionnez un horaire`;
+}
+
+function renderSlots(day){
+  const container = document.getElementById('slotList');
+  if(!day){
+    container.innerHTML=`<div style="font-size:12px;color:rgba(240,224,184,.3);padding:8px 0">Cliquez sur un jour vert pour voir les créneaux disponibles</div>`;
+    return;
+  }
+  const slots = SLOTS_DATA[day]||[];
+  container.innerHTML = slots.map((s,i)=>{
+    const booked = bookedSlots.has(day+'-'+i);
+    const full = s.spots===0 && !booked;
+    let cls='slot'; if(full)cls+=' full'; if(booked)cls+=' my-booking';
+    const btn = booked
+      ? `<button class="slot-book-btn" style="background:rgba(255,85,85,.2);color:var(--red)" onclick="cancelSlot(${day},${i})">Annuler</button>`
+      : full ? '' : `<button class="slot-book-btn" onclick="bookSlot(${day},${i})">Réserver</button>`;
+    return `<div class="${cls}">
+      <div class="slot-time">${s.time}</div>
+      <div class="slot-info">
+        <div class="slot-type">${s.type}</div>
+        <div class="slot-desc">${s.desc}</div>
+      </div>
+      <div class="slot-spots">${booked?'✓ Réservé':full?'Complet':`${s.spots} place${s.spots>1?'s':''}`}</div>
+      ${btn}
+    </div>`;
+  }).join('');
+}
+
+function bookSlot(day,idx){
+  bookedSlots.add(day+'-'+idx);
+  bookedSlots.add(day);
+  SLOTS_DATA[day][idx].spots = Math.max(0, SLOTS_DATA[day][idx].spots-1);
+  renderCal();
+  selectDay(day);
+  showToast('✓ Session réservée · Confirmation par email');
+}
+
+function cancelSlot(day,idx){
+  bookedSlots.delete(day+'-'+idx);
+  if(!Object.keys(SLOTS_DATA[day]||{}).some((_,i)=>bookedSlots.has(day+'-'+i))) bookedSlots.delete(day);
+  SLOTS_DATA[day][idx].spots++;
+  renderCal();
+  selectDay(day);
+  showToast('Session annulée');
+}
+
+// ══ VIDEOS ══
+const VIDEOS = [
+  {title:'Introduction aux Stratégies WheelCaller',desc:'Comprendre les bases du signal JOUER/PAUSE et comment l\'utiliser efficacement.',dur:'12:34',cat:'débutant',tag:'strat',new:true},
+  {title:'Maîtriser la Stratégie James Bond',desc:'Couverture de 25 numéros en 3 mises. Quand l\'utiliser et comment optimiser.',dur:'18:22',cat:'stratégie',tag:'strat',new:false},
+  {title:'D\'Alembert — Progression Maîtrisée',desc:'Système de mise progressif. Application concrète sur 30 tirages réels.',dur:'15:10',cat:'stratégie',tag:'avancé',new:false},
+  {title:'Session Coaching — Analyse Live #1',desc:'Replay d\'une session coaching individuelle. Analyse en temps réel des décisions.',dur:'42:18',cat:'coaching',tag:'coach',new:false},
+  {title:'Lire les Tendances — Zone & Couleur',desc:'Comment identifier rapidement la zone dominante et la couleur du moment.',dur:'09:45',cat:'stratégie',tag:'strat',new:false},
+  {title:'Stratégie 3/2 — Guide Complet',desc:'3 unités couleur + 2 unités colonne. 70% de couverture table expliqué.',dur:'14:30',cat:'stratégie',tag:'strat',new:true},
+  {title:'Paroli — Surfer les Séries Gagnantes',desc:'Doubler après chaque gain. Quand s\'arrêter, quand continuer.',dur:'11:55',cat:'stratégie',tag:'avancé',new:false},
+  {title:'Session Coaching — Analyse Live #2',desc:'Cas pratique : gestion d\'une série de pertes avec D\'Alembert.',dur:'38:42',cat:'coaching',tag:'coach',new:true},
+  {title:'Psychologie du Joueur VIP',desc:'Gestion émotionnelle, discipline, bankroll. Les erreurs à ne jamais commettre.',dur:'22:15',cat:'avancé',tag:'avancé',new:false},
+  {title:'Fibonacci — Pour les Experts',desc:'Séquence mathématique appliquée à la roulette. Cas d\'usage et limites.',dur:'16:08',cat:'avancé',tag:'avancé',new:false},
+  {title:'Caméra IA — Configuration Optimale',desc:'Réglages de la caméra pour une lecture parfaite. Tips et astuces.',dur:'07:22',cat:'débutant',tag:'strat',new:false},
+  {title:'Session Coaching Groupe VIP — Récap',desc:'Points clés du dernier Q&A groupe. Stratégies discutées et recommandations.',dur:'28:50',cat:'coaching',tag:'coach',new:true},
+];
+
+function filterVid(cat,el){
+  vidFilter=cat;
+  document.querySelectorAll('.vf').forEach(v=>v.classList.remove('on'));
+  el.classList.add('on');
+  renderVids();
+}
+
+function renderVids(){
+  const list = vidFilter==='tous' ? VIDEOS : VIDEOS.filter(v=>v.cat===vidFilter||v.tag===vidFilter);
+  document.getElementById('vidGrid').innerHTML = list.map((v,i)=>`
+    <div class="vid-card" onclick="openVid(${VIDEOS.indexOf(v)})">
+      <div class="vid-thumb">
+        <div class="vid-thumb-bg"></div>
+        <div class="vid-play">▶</div>
+        <div class="vid-dur">${v.dur}</div>
+      </div>
+      <div class="vid-info">
+        <div class="vid-title">${v.title}${v.new?'<span class="vid-new">NEW</span>':''}</div>
+        <div class="vid-meta">${v.dur} · ${v.cat}</div>
+        <span class="vid-tag ${v.tag}">${v.tag==='strat'?'Stratégie':v.tag==='coach'?'Coaching':'Avancé'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openVid(idx){
+  const v = VIDEOS[idx];
+  document.getElementById('vpTitle').textContent = v.title;
+  document.getElementById('vpDesc').textContent = v.desc;
+  document.getElementById('vidPlayer').classList.add('show');
+}
+function closeVid(){ document.getElementById('vidPlayer').classList.remove('show'); }
+
+// ══ CHAT ══
+const CHAT_DATA = {
+  general:[
+    {user:'MaxV', txt:'🔥 Viens de faire une session de 3h sur Gold Saloon, signal JOUER vraiment précis ce soir', time:'20:14', vip:true},
+    {user:'SophieL', txt:'Quelle stratégie tu utilisais ? James Bond ou numéros ?', time:'20:15', vip:false},
+    {user:'MaxV', txt:'James Bond uniquement en phase FORT, sinon 3/2 pour les phases normales', time:'20:17', vip:true},
+    {sys:'Alex Martin (Coach) a rejoint le salon'},
+    {user:'Coach Alex', txt:'Bonne approche Max 👌 James Bond c\'est vraiment pour les phases confirmées 4/5. Le reste du temps 3/2 est plus efficace en rapport risque/couverture', time:'20:19', vip:true, coach:true},
+    {user:'KarimB', txt:'Comment vous gérez les séries de pertes ? J\'ai du mal à rester discipliné', time:'20:22', vip:false},
+    {user:'Coach Alex', txt:'C\'est exactement ce qu\'on verra vendredi en session Karim. Mais règle d\'or : 3 pertes consécutives = STOP immédiat. Peu importe.', time:'20:23', vip:true, coach:true},
+  ],
+  strategie:[
+    {user:'LucasD', txt:'Question : est-ce que quelqu\'un combine D\'Alembert + James Bond ?', time:'19:45', vip:false},
+    {user:'MaxV', txt:'Oui c\'est puissant mais attention la mise totale monte vite. Je fais D\'Alembert sur les numéros 80% en phase normale, James Bond seulement en phase FORT flat betting', time:'19:48', vip:true},
+  ],
+  coaching:[
+    {sys:'Prochain coaching : Vendredi 25 Avril · 20h00'},
+    {user:'Coach Alex', txt:'Pour vendredi je prépare un focus spécial gestion des phases chaotiques. C\'est là que la plupart des joueurs perdent le plus', time:'18:30', vip:true, coach:true},
+    {user:'SophieL', txt:'Super ! C\'est exactement mon problème. J\'ai tendance à jouer même en phase PAUSE 😅', time:'18:32', vip:false},
+  ],
+  wins:[
+    {user:'MaxV', txt:'🏆 +180€ ce soir sur 2h de jeu. Signal nickel', time:'23:10', vip:true},
+    {user:'KarimB', txt:'💪 Première session profitable depuis 2 semaines ! D\'Alembert + Numéros 80%. Merci Coach !', time:'22:45', vip:false},
+    {user:'Marie_T', txt:'🎯 James Bond × 4 fois en phase FORT. Belle soirée', time:'21:30', vip:true},
+  ],
+  vip:[
+    {sys:'Salon réservé aux membres VIP'},
+    {user:'MaxV', txt:'Bon le lien affilié c\'est vraiment sympa. J\'ai déjà 2 conversions ce mois-ci via ma bio Instagram', time:'17:20', vip:true},
+    {user:'Marie_T', txt:'Comment tu présentes WheelCaller sur tes réseaux ?', time:'17:22', vip:true},
+    {user:'MaxV', txt:'Je fais des clips de 30s avec le signal en action. Le visuel JOUER en vert ça attire l\'oeil direct', time:'17:24', vip:true},
+  ],
+};
+
+function switchRoom(room, el){
+  currentRoom=room;
+  document.querySelectorAll('.cr-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderChat();
+}
+
+function renderChat(){
+  const msgs = CHAT_DATA[currentRoom]||[];
+  const container = document.getElementById('chatMsgs');
+  container.innerHTML = msgs.map(m=>{
+    if(m.sys) return `<div class="msg-sys">— ${m.sys} —</div>`;
+    const isMe = m.user===currentUser.name;
+    const avCls = isMe?'msg-av vip-av':'msg-av'+(m.vip?' vip-av':'');
+    const nameTag = m.coach?`<div class="msg-tag">🎓 Coach</div>`:''
+    return `<div class="msg ${isMe?'me':'other'}">
+      <div class="${avCls}">${m.user[0].toUpperCase()}</div>
+      <div>
+        ${!isMe?`<div class="msg-name">${m.user}</div>`:''}
+        ${nameTag}
+        <div class="msg-bubble">${m.txt}<div class="msg-time">${m.time}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  scrollChat();
+
+  // Simulate typing
+  setTimeout(()=>{
+    const typing=document.createElement('div');
+    typing.className='msg other'; typing.id='typingIndicator';
+    typing.innerHTML=`<div class="msg-av">${msgs[0]?msgs[0].user[0].toUpperCase():'?'}</div><div class="typing"><span></span><span></span><span></span></div>`;
+    container.appendChild(typing);
+    scrollChat();
+    setTimeout(()=>{ const t=document.getElementById('typingIndicator'); if(t)t.remove(); },2000);
+  },1500);
+}
+
+function scrollChat(){ const c=document.getElementById('chatMsgs'); if(c) setTimeout(()=>c.scrollTop=c.scrollHeight,50); }
+
+function sendMsg(){
+  const inp=document.getElementById('chatInp');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  inp.value='';
+  if(!CHAT_DATA[currentRoom]) CHAT_DATA[currentRoom]=[];
+  CHAT_DATA[currentRoom].push({user:currentUser.name,txt,time:new Date().toTimeString().slice(0,5),vip:true});
+  renderChat();
+
+  // Auto-reply
+  const replies = {
+    general:['Belle analyse ! 🔥','Totalement d\'accord avec toi','C\'est exactement ce que Coach Alex expliquait vendredi'],
+    strategie:['Bonne question !','J\'ai testé ça aussi, ça marche bien en phase confirmée','Tu utilises D\'Alembert ou Paroli avec ça ?'],
+    wins:['GG ! 🏆','Belle perf !','Continue comme ça 💪'],
+    vip:['Top stratégie !','Je vais essayer ça sur mes prochaines sessions'],
+    coaching:['Vivement vendredi !','Coach Alex est vraiment top','J\'ai appris tellement en 3 sessions'],
+  };
+  const roomReplies = replies[currentRoom]||replies.general;
+  const users=['MaxV','SophieL','KarimB','Marie_T'];
+  setTimeout(()=>{
+    const u=users[Math.floor(Math.random()*users.length)];
+    const r=roomReplies[Math.floor(Math.random()*roomReplies.length)];
+    CHAT_DATA[currentRoom].push({user:u,txt:r,time:new Date().toTimeString().slice(0,5),vip:Math.random()>0.5});
+    renderChat();
+  },1200+Math.random()*800);
+}
+
+// ══ LEADERBOARD ══
+const LB_DATA = {
+  sessions:[
+    {name:'MaxV',score:124,meta:'12 coachings · VIP depuis Jan 2025',me:false},
+    {name:'MarieLB',score:98,meta:'8 coachings · VIP depuis Fév 2025',me:false},
+    {name:'KarimB',score:87,meta:'6 coachings · VIP depuis Mar 2025',me:false},
+    {name:null,score:47,meta:'3 coachings · VIP depuis Mai 2025',me:true},
+    {name:'LucasD',score:38,meta:'2 coachings · VIP depuis Mai 2025',me:false},
+    {name:'EmmaR',score:29,meta:'1 coaching · VIP depuis Juin 2025',me:false},
+  ],
+  taux:[
+    {name:'MaxV',score:'84%',meta:'Taux signal JOUER · 124 sessions',me:false},
+    {name:'KarimB',score:'81%',meta:'Taux signal JOUER · 87 sessions',me:false},
+    {name:null,score:'78%',meta:'Taux signal JOUER · 47 sessions',me:true},
+    {name:'MarieLB',score:'76%',meta:'Taux signal JOUER · 98 sessions',me:false},
+    {name:'LucasD',score:'71%',meta:'Taux signal JOUER · 38 sessions',me:false},
+    {name:'EmmaR',score:'68%',meta:'Taux signal JOUER · 29 sessions',me:false},
+  ],
+  coachings:[
+    {name:'MaxV',score:12,meta:'Session individuelle × 8 · Groupe × 4',me:false},
+    {name:'MarieLB',score:8,meta:'Session individuelle × 5 · Groupe × 3',me:false},
+    {name:'KarimB',score:6,meta:'Session individuelle × 4 · Groupe × 2',me:false},
+    {name:null,score:3,meta:'Session individuelle × 2 · Groupe × 1',me:true},
+    {name:'LucasD',score:2,meta:'Session individuelle × 2',me:false},
+    {name:'EmmaR',score:1,meta:'Session individuelle × 1',me:false},
+  ],
+};
+
+function switchLb(mode,el){
+  lbMode=mode;
+  document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderLb(mode);
+}
+
+function renderLb(mode){
+  const data = LB_DATA[mode]||LB_DATA.sessions;
+  const rankColors = ['gold','silver','bronze','other','other','other'];
+  document.getElementById('lbList').innerHTML = data.map((p,i)=>{
+    const name = p.me ? currentUser.name : p.name;
+    const avCls = p.me ? 'lb-av me' : 'lb-av';
+    return `<div class="lb-item ${p.me?'me-row':''}">
+      <div class="lb-rank ${rankColors[i]||'other'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class="${avCls}">${name[0].toUpperCase()}</div>
+      <div class="lb-info">
+        <div class="lb-name">${name}${p.me?' (Vous)':''}</div>
+        <div class="lb-meta">${p.meta}</div>
+      </div>
+      <div class="lb-score">${p.score}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ INIT ══
+function initAll(){
+  renderCal();
+  renderVids();
+  renderChat();
+  renderLb('sessions');
+  // Simulate notification dot
+  setTimeout(()=>{ document.getElementById('chatDot').style.display='inline-block'; },3000);
+}
+</script>
+</body>
+</html>
