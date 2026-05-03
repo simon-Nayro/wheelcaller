@@ -532,13 +532,43 @@ function gateLogin(){
 
 // ══ ADMIN MODE ══
 const CLUB_ADMIN_EMAIL = 'sdb.consulting.pro@gmail.com';
+const CLUB_ADMIN_NAME  = 'ADMINISTRATEUR';
 
 function checkClubAdmin(){
   if(localStorage.getItem('wc_club_admin')==='1'){
+    // Bypass gate entirely
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+
+    // Set admin identity
+    currentUser = {
+      name: CLUB_ADMIN_NAME,
+      email: CLUB_ADMIN_EMAIL,
+      initial: 'S',
+      isAdmin: true
+    };
+
+    // Update displayed name/avatar everywhere
+    const dn = document.getElementById('dashName');
+    if(dn) dn.textContent = CLUB_ADMIN_NAME;
+    const pn = document.getElementById('profName');
+    if(pn) pn.textContent = 'Administrateur';
+    const pa = document.getElementById('profAv');
+    if(pa){ pa.textContent = '⚙'; pa.style.background='rgba(255,215,0,.2)'; pa.style.color='#FFD700'; }
+
+    // Show admin bar
     const bar = document.getElementById('clubAdminBar');
     if(bar) bar.style.display = 'flex';
+
+    // Tag admin messages in chat
+    window._adminMode = true;
+
+    initAll();
   }
 }
+
+// Auto-check on page load
+document.addEventListener('DOMContentLoaded', checkClubAdmin);
 
 function goAdmin(){
   localStorage.removeItem('wc_admin_mode');
@@ -762,11 +792,16 @@ function renderChat(){
     if(m.sys) return `<div class="msg-sys">— ${m.sys} —</div>`;
     const isMe = m.user===currentUser.name;
     const avCls = isMe?'msg-av vip-av':'msg-av'+(m.vip?' vip-av':'');
-    const nameTag = m.coach?`<div class="msg-tag">🎓 Coach</div>`:''
+    const isAdmin = m.admin || (isMe && currentUser.isAdmin);
+    const nameTag = isAdmin
+      ? `<div class="msg-tag" style="background:rgba(255,215,0,.15);color:#FFD700;border:1px solid rgba(255,215,0,.3)">⚙ ADMIN</div>`
+      : m.coach ? `<div class="msg-tag">🎓 Coach</div>` : '';
+    const avStyle = isAdmin ? 'background:rgba(255,215,0,.2);color:#FFD700;border:1px solid rgba(255,215,0,.3)' : '';
+    const nameDisplay = isAdmin ? `${m.user} <span style="font-size:9px;color:rgba(255,215,0,.5);letter-spacing:1px">· ADMINISTRATEUR</span>` : m.user;
     return `<div class="msg ${isMe?'me':'other'}">
-      <div class="${avCls}">${m.user[0].toUpperCase()}</div>
+      <div class="${avCls}" style="${avStyle}">${isAdmin?'⚙':m.user[0].toUpperCase()}</div>
       <div>
-        ${!isMe?`<div class="msg-name">${m.user}</div>`:''}
+        ${!isMe?`<div class="msg-name">${nameDisplay}</div>`:''}
         ${nameTag}
         <div class="msg-bubble">${m.txt}<div class="msg-time">${m.time}</div></div>
       </div>
@@ -774,7 +809,6 @@ function renderChat(){
   }).join('');
   scrollChat();
 
-  // Simulate typing
   setTimeout(()=>{
     const typing=document.createElement('div');
     typing.className='msg other'; typing.id='typingIndicator';
@@ -793,7 +827,13 @@ function sendMsg(){
   if(!txt) return;
   inp.value='';
   if(!CHAT_DATA[currentRoom]) CHAT_DATA[currentRoom]=[];
-  CHAT_DATA[currentRoom].push({user:currentUser.name,txt,time:new Date().toTimeString().slice(0,5),vip:true});
+  CHAT_DATA[currentRoom].push({
+    user: currentUser.isAdmin ? 'Administrateur' : currentUser.name,
+    txt,
+    time: new Date().toTimeString().slice(0,5),
+    vip: true,
+    admin: currentUser.isAdmin || false
+  });
   renderChat();
 
   // Auto-reply
