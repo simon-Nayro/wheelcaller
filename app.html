@@ -833,6 +833,7 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   <div class="pm-row" id="pmClubRow" style="display:none" onclick="openClub()">👑 WheelCaller Club</div>
   <div class="pm-row" onclick="window.open('guide.html','_blank')">📖 Guide d'utilisation</div>
   <div class="pm-row" id="pmAdminRow" style="display:none" onclick="openAdminPanel()">⚙ Admin Panel</div>
+  <div class="pm-row" id="pmReturnAdmin" style="display:none;color:var(--green2)" onclick="returnToAdmin()">🔙 Retour Admin</div>
   <div class="pm-row red" onclick="doLogout()">↩ Déconnexion</div>
 </div>
 
@@ -1834,6 +1835,23 @@ function skipOnboarding(){
   closeM('onboardingModal');
 }
 
+// ══ ADMIN MODE ══
+function returnToAdmin(){
+  localStorage.removeItem('wc_admin_mode');
+  window.location.href='admin.html';
+}
+
+function checkAdminMode(){
+  if(localStorage.getItem('wc_admin_mode')==='1' && isAdmin()){
+    const bar=document.getElementById('adminModeBar');
+    if(bar){ bar.style.display='flex'; }
+    const nav=document.querySelector('nav.top-nav,nav');
+    if(nav) nav.style.marginTop='44px';
+    const retBtn=document.getElementById('pmReturnAdmin');
+    if(retBtn) retBtn.style.display='block';
+  }
+}
+
 function showToast(msg){
   let t=document.getElementById('toast');
   if(!t){
@@ -1891,14 +1909,36 @@ const ADMIN_EMAILS = [ADMIN_EMAIL];
 function isAdmin(){ return user && ADMIN_EMAILS.includes(user.email); }
 
 function applyAdminAccess(){
+  // ── ADMIN = 100% accès total ──
   currentPlan='vip'; isPrem=true; loggedIn=true;
+
+  // Unlock all strategies
+  document.querySelectorAll('.sc[data-s]').forEach(el=>{
+    el.classList.remove('locked');
+    const lk=el.querySelector('.sc-lock'); if(lk) lk.remove();
+  });
+  // Unlock all progressions
+  document.querySelectorAll('.pg[data-pg]').forEach(el=>{
+    el.classList.remove('locked');
+    const lk=el.querySelector('.sc-lock'); if(lk) lk.remove();
+  });
+  // Unlock all risk levels
+  document.querySelectorAll('.risk-btn').forEach(el=>el.classList.remove('locked'));
+  // Unlock all tables
+  document.querySelectorAll('.table-opt').forEach(el=>el.classList.remove('locked'));
+  // Remove all lock overlays
+  document.querySelectorAll('.lock-overlay,.prem-lock,.locked-badge').forEach(el=>el.remove());
+
   try{applyPlanAccess('vip');}catch(e){}
+
   const adminRow=document.getElementById('pmAdminRow');
   if(adminRow) adminRow.style.display='block';
   const clubRow=document.getElementById('pmClubRow');
   if(clubRow) clubRow.style.display='block';
   const badge=document.getElementById('pmAdminBadge');
   if(badge) badge.style.display='block';
+  // Check if coming from admin panel
+  setTimeout(checkAdminMode, 200);
 }
 
 function togglePmenu(){
@@ -3306,5 +3346,14 @@ analyze();
 </div>
 </div>
 
+
+<!-- ADMIN MODE FLOATING BAR -->
+<div id="adminModeBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,rgba(6,16,8,.98),rgba(10,26,14,.98));border-bottom:2px solid rgba(255,215,0,.4);padding:8px 14px;display:none;align-items:center;justify-content:space-between;gap:10px">
+  <div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gold2)">⚙ MODE ADMIN · Simon Dubreil</div>
+    <div style="font-size:9px;color:rgba(212,168,67,.3);letter-spacing:1px">Accès VIP complet · sdb.consulting.pro@gmail.com</div>
+  </div>
+  <button onclick="returnToAdmin()" style="padding:7px 14px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer;white-space:nowrap;flex-shrink:0">🔙 ADMIN</button>
+</div>
 
 </body>

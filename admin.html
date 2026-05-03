@@ -200,6 +200,8 @@ input[type=range]{width:100%;accent-color:var(--gold2)}
     <div class="nav-logo">⚜ WheelCaller <small>PANNEAU ADMIN · sdb.consulting.pro@gmail.com</small></div>
     <div class="nav-badge">⚙ ADMIN</div>
     <button class="nav-btn" onclick="exportCSV()">📥 CSV</button>
+    <button class="nav-btn" style="border-color:rgba(192,64,32,.4);color:#ff8060" onclick="switchToClub()">👑 CLUB</button>
+    <button class="nav-btn" style="border-color:rgba(80,255,144,.3);color:var(--green2)" onclick="switchToPlayer()">🎯 JOUEUR</button>
     <button class="nav-btn red" onclick="aLogout()">↩</button>
   </nav>
 
@@ -365,6 +367,20 @@ input[type=range]{width:100%;accent-color:var(--gold2)}
 
 <!-- TOAST -->
 <div class="toast-adm" id="toastAdm"></div>
+
+<!-- FLOATING PLAYER MODE BUTTON -->
+<div id="playerModeBar" style="position:fixed;bottom:0;left:0;right:0;z-index:200;display:none">
+  <div style="background:linear-gradient(135deg,rgba(11,26,17,.98),rgba(15,30,20,.98));border-top:2px solid rgba(212,168,67,.3);padding:10px 16px;display:flex;align-items:center;gap:10px;justify-content:space-between">
+    <div style="flex-shrink:0">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gold2)">⚙ ADMIN CONNECTÉ</div>
+      <div style="font-size:9px;color:rgba(212,168,67,.3);letter-spacing:1px">Accès 100% débloqué</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button onclick="switchToClub()" style="padding:8px 12px;background:linear-gradient(135deg,rgba(192,64,32,.2),rgba(255,128,96,.15));color:#ff8060;border:1px solid rgba(192,64,32,.4);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border-radius:2px;cursor:pointer;white-space:nowrap">👑 CLUB</button>
+      <button onclick="switchToPlayer()" style="padding:8px 12px;background:linear-gradient(135deg,var(--green),var(--green2),var(--green));color:var(--felt);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer;white-space:nowrap">🎯 JOUEUR</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══ CONFIG ══
@@ -733,8 +749,37 @@ function toast(msg){
   t._t=setTimeout(()=>t.style.display='none',2500);
 }
 
-// Auto-init
-if(sessionStorage.getItem('wc_adm'))init();
+// ══ PLAYER MODE ══
+function switchToPlayer(){
+  localStorage.setItem('wc_admin_mode','1');
+  localStorage.setItem('wc_user', JSON.stringify({
+    prenom:'Simon', nom:'Dubreil', email:'sdb.consulting.pro@gmail.com',
+    pack:'vip', isAdmin:true, createdAt:new Date().toISOString()
+  }));
+  window.location.href='app.html';
+}
+
+function switchToClub(){
+  localStorage.setItem('wc_admin_mode','1');
+  localStorage.setItem('wc_club_admin','1');
+  localStorage.setItem('wc_user', JSON.stringify({
+    prenom:'Simon', nom:'Dubreil', email:'sdb.consulting.pro@gmail.com',
+    pack:'vip', isAdmin:true, createdAt:new Date().toISOString()
+  }));
+  window.location.href='club.html';
+}
+
+// Show player mode bar after login
+function showPlayerBar(){
+  const bar=document.getElementById('playerModeBar');
+  if(bar) bar.style.display='block';
+  const btab=document.querySelector('.btab');
+  if(btab) btab.style.bottom='64px';
+}
+
+if(sessionStorage.getItem('wc_adm')){
+  window.addEventListener('DOMContentLoaded',()=>{ setTimeout(showPlayerBar,300); });
+}
 </script>
 </body>
 </html>

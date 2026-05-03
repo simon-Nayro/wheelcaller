@@ -317,6 +317,18 @@ html,body{background:var(--bg);color:var(--ivory);font-family:"Barlow Condensed"
     <span class="vip-badge">👑 VIP</span>
   </div>
 
+  <!-- ADMIN BAR (visible uniquement admin) -->
+  <div id="clubAdminBar" style="display:none;background:linear-gradient(135deg,rgba(6,16,8,.98),rgba(10,26,14,.98));border-bottom:2px solid rgba(255,215,0,.35);padding:8px 14px;display:none;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0">
+    <div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;color:var(--gold2)">⚙ MODE ADMIN · Simon Dubreil</div>
+      <div style="font-size:9px;color:rgba(212,168,67,.3);letter-spacing:1px">Accès Club 100% débloqué</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="goPlayer()" style="padding:6px 12px;background:rgba(80,255,144,.1);color:#50ff90;border:1px solid rgba(80,255,144,.3);font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;border-radius:2px;cursor:pointer">🎯 JOUEUR</button>
+      <button onclick="goAdmin()" style="padding:6px 12px;background:linear-gradient(135deg,var(--gold3),var(--gold2),var(--gold3));color:#060e08;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;border:none;border-radius:2px;cursor:pointer">🔙 ADMIN</button>
+    </div>
+  </div>
+
   <!-- NAV TABS -->
   <div id="navTabs">
     <div class="nt on" onclick="showPage('dash')"><div class="nt-ico">🏠</div><div class="nt-lbl">Accueil</div></div>
@@ -516,6 +528,28 @@ function gateLogin(){
   document.getElementById('profName').textContent = name;
   document.getElementById('profAv').textContent = name[0].toUpperCase();
   initAll();
+}
+
+// ══ ADMIN MODE ══
+const CLUB_ADMIN_EMAIL = 'sdb.consulting.pro@gmail.com';
+
+function checkClubAdmin(){
+  if(localStorage.getItem('wc_club_admin')==='1'){
+    const bar = document.getElementById('clubAdminBar');
+    if(bar) bar.style.display = 'flex';
+  }
+}
+
+function goAdmin(){
+  localStorage.removeItem('wc_admin_mode');
+  localStorage.removeItem('wc_club_admin');
+  window.location.href = 'admin.html';
+}
+
+function goPlayer(){
+  localStorage.removeItem('wc_club_admin');
+  localStorage.setItem('wc_admin_mode','1');
+  window.location.href = 'app.html';
 }
 
 // ══ NAVIGATION ══
@@ -839,7 +873,7 @@ function initAll(){
   renderVids();
   renderChat();
   renderLb('sessions');
-  // Simulate notification dot
+  checkClubAdmin();
   setTimeout(()=>{ document.getElementById('chatDot').style.display='inline-block'; },3000);
 }
 </script>
