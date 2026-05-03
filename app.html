@@ -2771,13 +2771,28 @@ function showAffModal(){
 // ══ CAMERA ══
 function saveKey(){
   const k=document.getElementById('apiInp').value.trim();
-  if(!k||!k.startsWith('sk-ant')){alert('Clé invalide. Elle doit commencer par sk-ant-...');return;}
+  if(!k){showToast(lang==='fr'?'Entre ta clé API':'Enter your API key');return;}
+  if(!k.startsWith('sk-ant')){
+    showToast(lang==='fr'?'Format invalide — doit commencer par sk-ant-api...':'Invalid format — must start with sk-ant-api...');
+    return;
+  }
   apiKey=k;
+  localStorage.setItem('wc_apikey', k);
   document.getElementById('apirow').classList.remove('show');
   startCam();
 }
 
+// Restore saved key
+(function restoreKey(){
+  const saved=localStorage.getItem('wc_apikey');
+  if(saved){ apiKey=saved; const inp=document.getElementById('apiInp'); if(inp) inp.value=saved; }
+})();
+
 async function startCam(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showToast(lang==='fr'?'Caméra non supportée — utilise Chrome ou Safari en HTTPS':'Camera not supported — use Chrome or Safari on HTTPS');
+    return;
+  }
   try{
     const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
     const v=document.getElementById('camVideo'); v.srcObject=s; v.style.display='block';
@@ -2786,7 +2801,15 @@ async function startCam(){
     document.getElementById('cst').textContent='⬤ LIVE'; document.getElementById('cst').className='cst live';
     camLive=true; camCd=8; document.getElementById('camTmr').textContent=8;
     camInterval=setInterval(tickCam,1000);
-  }catch(e){alert('Impossible d\'accéder à la caméra.');}
+  }catch(e){
+    if(e.name==='NotAllowedError'){
+      showToast(lang==='fr'?'Permission refusée — autorise la caméra dans les réglages':'Permission denied — allow camera in browser settings');
+    } else if(e.name==='NotFoundError'){
+      showToast(lang==='fr'?'Aucune caméra détectée sur cet appareil':'No camera detected on this device');
+    } else {
+      showToast(lang==='fr'?'Impossible d\'accéder à la caméra':'Cannot access camera');
+    }
+  }
 }
 
 function tickCam(){
@@ -2803,13 +2826,32 @@ async function captureFrame(){
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:20,
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:20,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
           {type:'text',text:'Look at this Evolution Gaming roulette screenshot. What is the LAST winning number shown in the results panel? Reply with ONLY the number (0-36). Nothing else.'}
         ]}]})
     });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      if(res.status===401){
+        document.getElementById('camConf').textContent='✕ Clé API invalide';
+        showToast(lang==='fr'?'Clé API invalide — vérifie ta clé Anthropic':'Invalid API key — check your Anthropic key');
+        return;
+      }
+      if(res.status===429){
+        document.getElementById('camConf').textContent='⏳ Quota dépassé';
+        return;
+      }
+      document.getElementById('camConf').textContent='Erreur '+res.status;
+      return;
+    }
     const data=await res.json();
     const raw=(data.content?.[0]?.text||'?').trim();
     const num=parseInt(raw);
@@ -2821,7 +2863,9 @@ async function captureFrame(){
     } else {
       document.getElementById('camConf').textContent='Lecture en cours...';
     }
-  }catch(e){document.getElementById('camConf').textContent='Erreur API';}
+  }catch(e){
+    document.getElementById('camConf').textContent='Erreur réseau';
+  }
 }
 
 // ══ AD PARTNERS — ROTATION ENGINE ══
