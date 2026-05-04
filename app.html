@@ -1775,19 +1775,23 @@ function doLogin(){
   }
 
   // ── USER LOGIN ──
+  const p = document.getElementById('li-pwd') ? document.getElementById('li-pwd').value : '';
   const stored = JSON.parse(localStorage.getItem('wc_user')||'null');
   if(stored && stored.email === e){
+    // Check password if stored
+    if(stored.pwd && stored.pwd !== p){
+      showToast('Mot de passe incorrect');
+      return;
+    }
+    // Password ok or no password stored yet — let through
+    if(!stored.pwd && p){ stored.pwd=p; localStorage.setItem('wc_user',JSON.stringify(stored)); }
     user = { name:(stored.prenom||'')+(stored.nom?' '+stored.nom:'') || e.split('@')[0], email:e, prenom:stored.prenom||'', nom:stored.nom||'' };
     const pack = stored.pack||'free';
     currentPlan=pack; isPrem=(pack!=='free'); loggedIn=true;
     closeM('loginModal');
     renderUser(); applyPlanAccess(pack); startNewSession();
   } else {
-    user = { name:e.split('@')[0], email:e };
-    loggedIn=true; isPrem=false; currentPlan='free';
-    localStorage.setItem('wc_user', JSON.stringify({ email:e, prenom:e.split('@')[0], nom:'', pack:'free', createdAt:new Date().toISOString() }));
-    closeM('loginModal');
-    renderUser(); startNewSession();
+    showToast('Email introuvable — crée un compte d\'abord');
   }
 }
 function doRegister(){
