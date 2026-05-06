@@ -177,6 +177,14 @@ input[type=range]{width:100%;accent-color:var(--gold2)}
 .ca-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#ff8060;margin-bottom:4px}
 .ca-sub{font-size:12px;color:rgba(240,224,192,.4)}
 </style>
+
+  <!-- ══ SUPABASE ══ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://wpcvyylroslglcexlffp.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwY3Z5eWxyb3NsZ2xjZXhsZmZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzAzNzQsImV4cCI6MjA5MzY0NjM3NH0.mNATozEFUtKC486K0JtPr3KWIkjVRs-2crZcEbZOYhI';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
 </head>
 <body>
 
@@ -440,27 +448,28 @@ function init(){
 }
 
 // ══ USERS ══
-function loadUsers(){
-  const raw=[];
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(k==='wc_user'||k.startsWith('wc_user_')){
-      try{const u=JSON.parse(localStorage.getItem(k));if(u&&u.email)raw.push(u);}catch(e){}
-    }
+async function loadUsers(){
+  try {
+    // Charger les vrais utilisateurs depuis Supabase
+    const { data, error } = await sb.from('users').select('*').order('created_at', { ascending: false });
+    if(error) throw error;
+    users = data.map(u=>({
+      prenom: u.prenom||'',
+      nom: u.nom||'',
+      email: u.email,
+      pack: u.pack||'free',
+      isAdmin: u.is_admin||false,
+      createdAt: u.created_at,
+      last_login: u.last_login
+    }));
+    toast('✓ '+users.length+' utilisateurs chargés depuis Supabase');
+  } catch(e) {
+    console.error('Supabase error:', e);
+    toast('⚠ Chargement local (Supabase indisponible)');
+    // Fallback local
+    const stored = localStorage.getItem('wc_user');
+    users = stored ? [JSON.parse(stored)] : [];
   }
-  const demos=[
-    {prenom:'Simon',nom:'Dubreil',email:'sdb.consulting.pro@gmail.com',pack:'vip',phone:'+33 6 12 34 56 78',isAdmin:true,createdAt:new Date().toISOString()},
-    {prenom:'Marie',nom:'Dupont',email:'marie.d@gmail.com',pack:'pro',phone:'+33 6 23 45 67 89',createdAt:new Date(Date.now()-86400000).toISOString()},
-    {prenom:'Thomas',nom:'Bernard',email:'thomas.b@hotmail.fr',pack:'starter',createdAt:new Date(Date.now()-172800000).toISOString()},
-    {prenom:'Julie',nom:'Martin',email:'julie.m@gmail.com',pack:'free',createdAt:new Date(Date.now()-259200000).toISOString()},
-    {prenom:'Alex',nom:'Rousseau',email:'alex.r@yahoo.fr',pack:'elite',phone:'+33 6 45 67 89 01',createdAt:new Date(Date.now()-345600000).toISOString()},
-    {prenom:'Lucas',nom:'Petit',email:'lucas.p@gmail.com',pack:'pro',createdAt:new Date(Date.now()-432000000).toISOString()},
-    {prenom:'Emma',nom:'Leroy',email:'emma.l@gmail.com',pack:'vip',phone:'+33 6 56 78 90 12',createdAt:new Date(Date.now()-518400000).toISOString()},
-    {prenom:'Nathan',nom:'Moreau',email:'nathan.m@hotmail.fr',pack:'starter',createdAt:new Date(Date.now()-604800000).toISOString()},
-  ];
-  const emails=new Set(raw.map(u=>u.email));
-  demos.forEach(d=>{if(!emails.has(d.email))raw.push(d);});
-  users=raw.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
   filterU();
   updateKPIs();
   updateRevenue();
@@ -591,19 +600,32 @@ const DEFAULT_PROMOS=[
   {code:'VIP2025',discount:100,type:'influencer',limit:null,uses:0,note:'Pack VIP offert',createdAt:new Date().toISOString()},
 ];
 
-function loadPromos(){
-  promos=JSON.parse(localStorage.getItem('wc_promos')||'null');
-  if(!promos||!promos.length){promos=DEFAULT_PROMOS;savePromos();}
+async function loadPromos(){
+  try {
+    const { data, error } = await sb.from('promo_codes').select('*').order('created_at', { ascending: false });
+    if(error) throw error;
+    promos = data.map(p=>({
+      code: p.code, discount: p.discount, type: p.type,
+      limit: p.limit_uses, uses: p.uses, note: p.note||'',
+      createdAt: p.created_at, id: p.id
+    }));
+  } catch(e) {
+    promos=JSON.parse(localStorage.getItem('wc_promos')||'null');
+    if(!promos||!promos.length){promos=DEFAULT_PROMOS;savePromos();}
+  }
 }
 
 function savePromos(){localStorage.setItem('wc_promos',JSON.stringify(promos));}
 
-function createPromo(){
+async function createPromo(){
   const code=document.getElementById('pCode').value.trim().toUpperCase();
   if(!code){toast('⚠ Entre un code');return;}
   if(promos.find(p=>p.code===code)){toast('⚠ Ce code existe déjà');return;}
-  promos.unshift({code,discount:parseInt(document.getElementById('pDisc').value),type:document.getElementById('pType').value,limit:document.getElementById('pLimit').value?parseInt(document.getElementById('pLimit').value):null,uses:0,note:document.getElementById('pNote').value.trim(),createdAt:new Date().toISOString()});
-  savePromos();
+  const newPromo={code,discount:parseInt(document.getElementById('pDisc').value),type:document.getElementById('pType').value,limit_uses:document.getElementById('pLimit').value?parseInt(document.getElementById('pLimit').value):null,uses:0,note:document.getElementById('pNote').value.trim()};
+  try {
+    await sb.from('promo_codes').insert(newPromo);
+  } catch(e) { console.error(e); }
+  promos.unshift({...newPromo,limit:newPromo.limit_uses,createdAt:new Date().toISOString()});
   document.getElementById('pCode').value='';
   document.getElementById('pNote').value='';
   renderPromos();

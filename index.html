@@ -186,6 +186,14 @@ footer a{color:rgba(212,168,67,.35);text-decoration:none}
 .trust{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:24px 0 0}
 .tb{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(240,224,192,.35);letter-spacing:.5px}
 </style>
+
+  <!-- ══ SUPABASE ══ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://wpcvyylroslglcexlffp.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwY3Z5eWxyb3NsZ2xjZXhsZmZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzAzNzQsImV4cCI6MjA5MzY0NjM3NH0.mNATozEFUtKC486K0JtPr3KWIkjVRs-2crZcEbZOYhI';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
 </head>
 <body>
 
@@ -610,13 +618,12 @@ function applyPromo(){
 }
 
 // ══ REGISTER ══
-function register(){
+async function register(){
   const prenom = document.getElementById('reg-prenom').value.trim();
   const nom    = document.getElementById('reg-nom').value.trim();
   const email  = document.getElementById('reg-email').value.trim();
   const pwd    = document.getElementById('reg-pwd').value;
   const errEl  = document.getElementById('regError');
-
   errEl.classList.remove('show');
 
   if(!prenom){ showErr('regError', 'Le prénom est requis.'); return; }
@@ -624,45 +631,77 @@ function register(){
   if(!email || !email.includes('@')){ showErr('regError', 'Email invalide.'); return; }
   if(pwd.length < 6){ showErr('regError', 'Mot de passe trop court (6 caractères min).'); return; }
 
-  // Save user WITH password locally (in prod: Supabase)
-  const user = { prenom, nom, email, pwd, pack: selectedPack, createdAt: new Date().toISOString() };
-  localStorage.setItem('wc_user', JSON.stringify(user));
-  localStorage.setItem('wc_pack', selectedPack);
+  // Capture ref affilié
+  const ref = new URLSearchParams(window.location.search).get('ref') || '';
 
-  // Show confirmation then redirect
   const btn = document.querySelector('#registerModal .btn-submit');
-  if(btn){
-    btn.textContent = '✓ COMPTE CRÉÉ · REDIRECTION...';
-    btn.style.background = 'linear-gradient(135deg,#0a3a1a,#1a9944,#0a3a1a)';
+  if(btn){ btn.textContent = 'CRÉATION EN COURS...'; btn.disabled = true; }
+
+  try {
+    // Vérifier si email déjà utilisé
+    const { data: existing } = await sb.from('users').select('id').eq('email', email).single();
+    if(existing){ showErr('regError', 'Cet email est déjà utilisé.'); if(btn){btn.textContent='⚜ COMMENCER MAINTENANT';btn.disabled=false;} return; }
+
+    // Insérer dans Supabase
+    const { error } = await sb.from('users').insert({
+      email, prenom, nom, pwd_hash: pwd,
+      pack: selectedPack, ref: ref || null
+    });
+    if(error) throw error;
+
+    // Sauvegarder aussi en local pour la session
+    localStorage.setItem('wc_user', JSON.stringify({ prenom, nom, email, pwd, pack: selectedPack, createdAt: new Date().toISOString() }));
+    localStorage.setItem('wc_pack', selectedPack);
+
+    if(btn){ btn.textContent = '✓ COMPTE CRÉÉ · REDIRECTION...'; btn.style.background = 'linear-gradient(135deg,#0a3a1a,#1a9944,#0a3a1a)'; }
+    showToast('✓ Bienvenue '+prenom+' ! Redirection vers WheelCaller...');
+    setTimeout(()=>{ window.location.href = 'app.html'; }, 1500);
+
+  } catch(e) {
+    console.error(e);
+    showErr('regError', 'Erreur lors de la création du compte. Réessaie.');
+    if(btn){ btn.textContent='⚜ COMMENCER MAINTENANT'; btn.disabled=false; }
   }
-  showToast('✓ Bienvenue '+prenom+' ! Redirection vers WheelCaller...');
-  setTimeout(()=>{ window.location.href = 'app.html'; }, 1500);
 }
 
 // ══ LOGIN ══
-function login(){
+async function login(){
   const email = document.getElementById('li-email').value.trim();
   const pwd   = document.getElementById('li-pwd').value;
 
   if(!email || !pwd){ showErr('loginError', 'Remplis tous les champs.'); return; }
 
-  // Check stored user + password
-  const user = JSON.parse(localStorage.getItem('wc_user') || 'null');
-
   // Admin bypass
   if(email === 'sdb.consulting.pro@gmail.com'){
+    localStorage.setItem('wc_user', JSON.stringify({prenom:'Simon',nom:'Dubreil',email,pwd,pack:'vip',isAdmin:true,createdAt:new Date().toISOString()}));
     window.location.href = 'app.html'; return;
   }
 
-  if(user && user.email === email && user.pwd === pwd){
+  try {
+    // Vérifier dans Supabase
+    const { data: user, error } = await sb.from('users').select('*').eq('email', email).single();
+
+    if(!user || error){
+      showErr('loginError', "Email introuvable. Crée un compte d'abord."); return;
+    }
+    if(user.pwd_hash !== pwd){
+      showErr('loginError', 'Mot de passe incorrect.'); return;
+    }
+
+    // Mettre à jour last_login
+    await sb.from('users').update({ last_login: new Date().toISOString() }).eq('email', email);
+
+    // Sauvegarder session locale
+    localStorage.setItem('wc_user', JSON.stringify({
+      prenom: user.prenom, nom: user.nom, email: user.email,
+      pwd: user.pwd_hash, pack: user.pack, createdAt: user.created_at
+    }));
+    localStorage.setItem('wc_pack', user.pack);
     window.location.href = 'app.html';
-  } else if(user && user.email === email && !user.pwd){
-    // Account created before password fix — update and let through
-    user.pwd = pwd;
-    localStorage.setItem('wc_user', JSON.stringify(user));
-    window.location.href = 'app.html';
-  } else {
-    showErr('loginError', 'Email ou mot de passe incorrect.');
+
+  } catch(e) {
+    console.error(e);
+    showErr('loginError', 'Erreur de connexion. Réessaie.');
   }
 }
 

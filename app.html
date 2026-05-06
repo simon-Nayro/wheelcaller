@@ -532,6 +532,14 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
 
 .section-title{display:flex;align-items:center;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:#FFD700;font-weight:700;text-shadow:0 0 12px rgba(255,215,0,.35);padding:10px 14px 8px;margin:6px 0 2px;border-bottom:1px solid rgba(255,215,0,.25);background:rgba(0,0,0,.15);}
 </style>
+
+  <!-- ══ SUPABASE ══ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://wpcvyylroslglcexlffp.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwY3Z5eWxyb3NsZ2xjZXhsZmZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzAzNzQsImV4cCI6MjA5MzY0NjM3NH0.mNATozEFUtKC486K0JtPr3KWIkjVRs-2crZcEbZOYhI';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
 </head>
 <body>
 
@@ -1740,11 +1748,19 @@ function swM(a,b){closeM(a);openM(b)}
           email: u.email, prenom: u.prenom||'', nom: u.nom||''
         };
         loggedIn = true;
-        document.addEventListener('DOMContentLoaded', ()=>{
+        document.addEventListener('DOMContentLoaded', async ()=>{
           if(ADMIN_EMAILS.includes(u.email)){
             applyAdminAccess(); renderUser(); startNewSession();
             showToast('⚜ Accès Administrateur activé');
           } else {
+            // Sync pack depuis Supabase
+            try {
+              const { data } = await sb.from('users').select('pack').eq('email', u.email).single();
+              if(data && data.pack) {
+                u.pack = data.pack;
+                localStorage.setItem('wc_user', JSON.stringify(u));
+              }
+            } catch(e) { console.log('Supabase sync:', e); }
             const pack = u.pack||'free';
             currentPlan=pack; isPrem=(pack!=='free');
             renderUser(); applyPlanAccess(pack); startNewSession();
@@ -1869,6 +1885,8 @@ function showToast(msg){
   setTimeout(()=>{t.style.display='none';},3000);
 }
 function doLogout(){
+  // Update Supabase last_login on logout
+  try { if(user && user.email) sb.from('users').update({last_login: new Date().toISOString()}).eq('email', user.email); } catch(e){}
   loggedIn=false; isPrem=false; user=null; currentPlan='free';
   localStorage.removeItem('wc_user');
   localStorage.removeItem('wc_pack');
