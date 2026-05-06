@@ -194,6 +194,16 @@ footer a{color:rgba(212,168,67,.35);text-decoration:none}
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwY3Z5eWxyb3NsZ2xjZXhsZmZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzAzNzQsImV4cCI6MjA5MzY0NjM3NH0.mNATozEFUtKC486K0JtPr3KWIkjVRs-2crZcEbZOYhI';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   </script>
+
+  <!-- ══ STRIPE PAYMENT LINKS ══ -->
+  <script>
+    const STRIPE_LINKS = {
+      starter: 'https://buy.stripe.com/9B67sM7Hy41qefe8x30ZW00',
+      pro:     'https://buy.stripe.com/fZu28sbXO2Xm4EE4gN0ZW01',
+      elite:   'https://buy.stripe.com/4gMaEY5zqcxWfji00x0ZW02',
+      vip:     'https://buy.stripe.com/14A28s4vmgOc7QQ3cJ0ZW03'
+    };
+  </script>
 </head>
 <body>
 
@@ -653,9 +663,20 @@ async function register(){
     localStorage.setItem('wc_user', JSON.stringify({ prenom, nom, email, pwd, pack: selectedPack, createdAt: new Date().toISOString() }));
     localStorage.setItem('wc_pack', selectedPack);
 
-    if(btn){ btn.textContent = '✓ COMPTE CRÉÉ · REDIRECTION...'; btn.style.background = 'linear-gradient(135deg,#0a3a1a,#1a9944,#0a3a1a)'; }
-    showToast('✓ Bienvenue '+prenom+' ! Redirection vers WheelCaller...');
-    setTimeout(()=>{ window.location.href = 'app.html'; }, 1500);
+    if(btn){ btn.textContent = '✓ COMPTE CRÉÉ...'; btn.style.background = 'linear-gradient(135deg,#0a3a1a,#1a9944,#0a3a1a)'; }
+    showToast('✓ Bienvenue '+prenom+' !');
+
+    // Si pack payant → Stripe Payment Link
+    if(selectedPack !== 'free' && STRIPE_LINKS && STRIPE_LINKS[selectedPack]){
+      setTimeout(()=>{
+        showToast('Redirection vers le paiement sécurisé...');
+        const url = STRIPE_LINKS[selectedPack] + '?prefilled_email='+encodeURIComponent(email);
+        setTimeout(()=>{ window.location.href = url; }, 800);
+      }, 600);
+    } else {
+      // Pack FREE → accès direct
+      setTimeout(()=>{ window.location.href = 'app.html'; }, 1200);
+    }
 
   } catch(e) {
     console.error(e);

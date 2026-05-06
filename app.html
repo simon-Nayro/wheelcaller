@@ -540,6 +540,16 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwY3Z5eWxyb3NsZ2xjZXhsZmZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzAzNzQsImV4cCI6MjA5MzY0NjM3NH0.mNATozEFUtKC486K0JtPr3KWIkjVRs-2crZcEbZOYhI';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   </script>
+
+  <!-- ══ STRIPE PAYMENT LINKS ══ -->
+  <script>
+    const STRIPE_LINKS = {
+      starter: 'https://buy.stripe.com/9B67sM7Hy41qefe8x30ZW00',
+      pro:     'https://buy.stripe.com/fZu28sbXO2Xm4EE4gN0ZW01',
+      elite:   'https://buy.stripe.com/4gMaEY5zqcxWfji00x0ZW02',
+      vip:     'https://buy.stripe.com/14A28s4vmgOc7QQ3cJ0ZW03'
+    };
+  </script>
 </head>
 <body>
 
@@ -1855,6 +1865,30 @@ function skipOnboarding(){
   closeM('onboardingModal');
 }
 
+
+// ══ STRIPE PAYMENT SUCCESS ══
+(function checkPaymentSuccess(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('payment') === 'success'){
+    const pack = params.get('pack');
+    const email = params.get('email');
+    if(pack && email){
+      // Update pack in Supabase
+      try {
+        sb.from('users').update({ pack: pack }).eq('email', decodeURIComponent(email))
+          .then(()=> console.log('Pack updated to', pack));
+      } catch(e){ console.error(e); }
+      // Update localStorage
+      const stored = JSON.parse(localStorage.getItem('wc_user')||'{}');
+      stored.pack = pack;
+      localStorage.setItem('wc_user', JSON.stringify(stored));
+      localStorage.setItem('wc_pack', pack);
+    }
+    // Clean URL
+    window.history.replaceState({}, '', 'app.html');
+  }
+})();
+
 // ══ ADMIN MODE ══
 function returnToAdmin(){
   localStorage.removeItem('wc_admin_mode');
@@ -3155,6 +3189,20 @@ function applyPromoCode(){
 }
 
 function doPlanUpgrade(plan){
+  if(plan === 'free'){ closeM('upgradeModal'); return; }
+
+  // Stripe Payment Link
+  if(STRIPE_LINKS && STRIPE_LINKS[plan]){
+    closeM('upgradeModal');
+    const email = user ? user.email : '';
+    // Add email prefill to Stripe link
+    const url = STRIPE_LINKS[plan] + (email ? '?prefilled_email='+encodeURIComponent(email) : '');
+    showToast('Redirection vers le paiement sécurisé...');
+    setTimeout(()=>{ window.location.href = url; }, 600);
+    return;
+  }
+
+  // Fallback démo
   closeM('upgradeModal');
   currentPlan = plan;
   isPrem = (plan !== 'free');
