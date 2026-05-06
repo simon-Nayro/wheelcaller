@@ -679,12 +679,13 @@ async function login(){
 
   try {
     // Vérifier dans Supabase
-    const { data: user, error } = await sb.from('users').select('*').eq('email', email).single();
+    const { data: users, error } = await sb.from('users').select('*').eq('email', email);
 
-    if(!user || error){
-      showErr('loginError', "Email introuvable. Crée un compte d'abord."); return;
-    }
-    if(user.pwd_hash !== pwd){
+    if(error){ console.error('Supabase error:', error); showErr('loginError', 'Erreur serveur. Réessaie.'); return; }
+    if(!users || users.length === 0){ showErr('loginError', "Email introuvable. Crée un compte d'abord."); return; }
+
+    const u = users[0];
+    if(u.pwd_hash !== pwd){
       showErr('loginError', 'Mot de passe incorrect.'); return;
     }
 
@@ -693,10 +694,10 @@ async function login(){
 
     // Sauvegarder session locale
     localStorage.setItem('wc_user', JSON.stringify({
-      prenom: user.prenom, nom: user.nom, email: user.email,
-      pwd: user.pwd_hash, pack: user.pack, createdAt: user.created_at
+      prenom: u.prenom, nom: u.nom, email: u.email,
+      pwd: u.pwd_hash, pack: u.pack, createdAt: u.created_at
     }));
-    localStorage.setItem('wc_pack', user.pack);
+    localStorage.setItem('wc_pack', u.pack);
     window.location.href = 'app.html';
 
   } catch(e) {
