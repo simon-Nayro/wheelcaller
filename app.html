@@ -1774,6 +1774,8 @@ function swM(a,b){closeM(a);openM(b)}
             const pack = u.pack||'free';
             currentPlan=pack; isPrem=(pack!=='free');
             renderUser(); applyPlanAccess(pack); startNewSession();
+    if(pack !== 'free') setTimeout(loadCameraKeyFromSupabase, 500);
+            if(pack !== 'free') setTimeout(loadCameraKeyFromSupabase, 500);
           }
         });
       }
@@ -1995,6 +1997,8 @@ function applyAdminAccess(){
   if(badge) badge.style.display='block';
   // Check if coming from admin panel
   setTimeout(checkAdminMode, 200);
+  // Load camera key
+  setTimeout(loadCameraKeyFromSupabase, 500);
 }
 
 function togglePmenu(){
@@ -2843,6 +2847,26 @@ function saveKey(){
   const saved=localStorage.getItem('wc_apikey');
   if(saved){ apiKey=saved; const inp=document.getElementById('apiInp'); if(inp) inp.value=saved; }
 })();
+
+// ══ LOAD CAMERA KEY FROM SUPABASE (STARTER+) ══
+async function loadCameraKeyFromSupabase(){
+  // Seulement pour les packs payants
+  if(!currentPlan || currentPlan === 'free') return;
+  try {
+    const { data, error } = await sb.from('config').select('value').eq('key', 'camera_api_key').single();
+    if(data && data.value && data.value.startsWith('sk-ant')){
+      apiKey = data.value;
+      localStorage.setItem('wc_apikey', data.value);
+      // Cacher le champ de saisie manuelle
+      const apirow = document.getElementById('apirow');
+      if(apirow) apirow.style.display = 'none';
+      // Afficher message de confirmation
+      const camConf = document.getElementById('camConf');
+      if(camConf) camConf.textContent = '✓ Caméra IA prête';
+      console.log('✓ Clé caméra chargée depuis Supabase');
+    }
+  } catch(e){ console.log('Camera key load:', e); }
+}
 
 async function startCam(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
