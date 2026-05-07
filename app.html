@@ -2912,34 +2912,49 @@ async function captureFrame(){
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:20,
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:100,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
-          {type:'text',text:'Look at this Evolution Gaming roulette screenshot. What is the LAST winning number shown in the results panel? Reply with ONLY the number (0-36). Nothing else.'}
+          {type:'text',text:`You are analyzing an Evolution Gaming live roulette screen.
+Look at the recent results panel (usually a horizontal row of colored circles/numbers at the top or side of the screen).
+List ALL visible winning numbers from the MOST RECENT to the OLDEST, separated by commas.
+Include up to 15 numbers maximum.
+Reply with ONLY the numbers separated by commas, nothing else.
+Example: 17,3,25,0,12,8,36,14,2,19
+If you can only see 1 number, reply with just that number.`}
         ]}]})
     });
     if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      if(res.status===401){
-        document.getElementById('camConf').textContent='✕ Clé API invalide';
-        showToast(lang==='fr'?'Clé API invalide — vérifie ta clé Anthropic':'Invalid API key — check your Anthropic key');
-        return;
-      }
-      if(res.status===429){
-        document.getElementById('camConf').textContent='⏳ Quota dépassé';
-        return;
-      }
-      document.getElementById('camConf').textContent='Erreur '+res.status;
-      return;
+      if(res.status===401){ document.getElementById('camConf').textContent='✕ Clé API invalide'; return; }
+      if(res.status===429){ document.getElementById('camConf').textContent='⏳ Quota dépassé'; return; }
+      document.getElementById('camConf').textContent='Erreur '+res.status; return;
     }
     const data=await res.json();
-    const raw=(data.content?.[0]?.text||'?').trim();
-    const num=parseInt(raw);
-    if(!isNaN(num)&&num>=0&&num<=36){
-      document.getElementById('camNum').textContent=num;
-      document.getElementById('camNum').style.color=nc(num)==='red'?'var(--red2)':nc(num)==='black'?'#aaa':'var(--gold2)';
-      document.getElementById('camConf').textContent='✓ Détecté';
-      addToHistory(num);
+    const raw=(data.content?.[0]?.text||'').trim();
+
+    // Parse multiple numbers
+    const nums = raw.split(',')
+      .map(s => parseInt(s.trim()))
+      .filter(n => !isNaN(n) && n >= 0 && n <= 36);
+
+    if(nums.length > 0){
+      // Add only NEW numbers (avoid duplicates with recent history)
+      const recentHistory = history ? history.slice(0, 3) : [];
+      let added = 0;
+
+      // Add numbers in reverse (oldest first) so most recent ends up on top
+      const toAdd = nums.slice(0, 15).reverse();
+      toAdd.forEach(n => {
+        // Only add if not already in very recent history to avoid duplicates
+        if(added === 0 || !recentHistory.includes(n)){
+          addToHistory(n);
+          added++;
+        }
+      });
+
+      document.getElementById('camNum').textContent = nums[0]; // Most recent
+      document.getElementById('camNum').style.color = nc(nums[0])==='red'?'var(--red2)':nc(nums[0])==='black'?'#aaa':'var(--gold2)';
+      document.getElementById('camConf').textContent = `✓ ${nums.length} numéro${nums.length>1?'s':''} détecté${nums.length>1?'s':''}`;
     } else {
       document.getElementById('camConf').textContent='Lecture en cours...';
     }
