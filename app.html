@@ -936,7 +936,7 @@ footer{text-align:center;padding:12px;font-size:10px;color:rgba(212,168,67,.13);
   </div>
   <div class="apirow" id="apirow">
     <input type="password" class="apii" id="apiInp" placeholder="sk-ant-api03-...">
-    <button class="apis" onclick="saveKey()">Activer</button>
+    <button class="apis" onclick="handleCamActivate()">Activer</button>
   </div>
 </div>
 
@@ -2829,6 +2829,20 @@ function showAffModal(){
 }
 
 // ══ CAMERA ══
+// ══ CAMERA ACTIVATE HANDLER ══
+function handleCamActivate(){
+  if(currentPlan === 'free' || !currentPlan){
+    // FREE user → show upgrade modal
+    openM('upgradeModal');
+    showToast(lang==='fr'
+      ? '📷 La caméra IA est disponible dès le pack STARTER'
+      : '📷 AI Camera is available from STARTER plan');
+    return;
+  }
+  // Paid user → activate normally
+  saveKey();
+}
+
 function saveKey(){
   const k=document.getElementById('apiInp').value.trim();
   if(!k){showToast(lang==='fr'?'Entre ta clé API':'Enter your API key');return;}
